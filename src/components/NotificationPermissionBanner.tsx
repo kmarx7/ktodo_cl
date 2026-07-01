@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { BellRing, X } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export function NotificationPermissionBanner() {
   const [visible, setVisible] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     const dismissed = localStorage.getItem("alarm-banner-dismissed") === "1";
@@ -30,11 +32,11 @@ export function NotificationPermissionBanner() {
   return (
     <div className="flex shrink-0 items-center gap-2 bg-amber-50 px-4 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200">
       <BellRing size={14} className="shrink-0" />
-      <span className="flex-1">Turn on notifications to get reminders while the app is open</span>
+      <span className="flex-1">{t("notification.prompt")}</span>
       <button type="button" onClick={enable} className="shrink-0 touch-manipulation rounded bg-amber-900 px-2 py-1 text-white dark:bg-amber-200 dark:text-amber-900">
-        Enable
+        {t("notification.enable")}
       </button>
-      <button type="button" onClick={dismiss} aria-label="Dismiss" className="shrink-0 touch-manipulation">
+      <button type="button" onClick={dismiss} aria-label={t("notification.dismiss")} className="shrink-0 touch-manipulation">
         <X size={14} />
       </button>
     </div>

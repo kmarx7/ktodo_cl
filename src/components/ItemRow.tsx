@@ -4,11 +4,12 @@ import { format } from "date-fns";
 import { Trash2 } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { formatCurrency } from "@/lib/parse";
+import { useLocale, useT } from "@/lib/i18n";
 import type { Item } from "@/types/item";
 
-function formatDue(dueDate: string | null, dueTime: string | null): string | null {
+function formatDue(dueDate: string | null, dueTime: string | null, locale: "en" | "ko"): string | null {
   if (!dueDate) return null;
-  const datePart = format(new Date(`${dueDate}T00:00`), "MMM d");
+  const datePart = format(new Date(`${dueDate}T00:00`), locale === "ko" ? "M월 d일" : "MMM d");
   return dueTime ? `${datePart}, ${dueTime}` : datePart;
 }
 
@@ -21,7 +22,9 @@ function isOverdue(dueDate: string | null, dueTime: string | null): boolean {
 export function ItemRow({ item }: { item: Item }) {
   const toggleChecked = useItemStore((state) => state.toggleChecked);
   const deleteItem = useItemStore((state) => state.deleteItem);
-  const due = formatDue(item.dueDate, item.dueTime);
+  const t = useT();
+  const locale = useLocale();
+  const due = formatDue(item.dueDate, item.dueTime, locale);
   const overdue = !item.checked && isOverdue(item.dueDate, item.dueTime);
 
   return (
@@ -29,7 +32,7 @@ export function ItemRow({ item }: { item: Item }) {
       <button
         type="button"
         onClick={() => toggleChecked(item.id)}
-        aria-label={item.checked ? "Uncheck" : "Check"}
+        aria-label={item.checked ? t("item.uncheck") : t("item.check")}
         className="flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center"
       >
         <span
@@ -75,7 +78,7 @@ export function ItemRow({ item }: { item: Item }) {
       <button
         type="button"
         onClick={() => deleteItem(item.id)}
-        aria-label="Delete"
+        aria-label={t("item.delete")}
         className="flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-neutral-300 active:text-red-500 dark:text-neutral-700"
       >
         <Trash2 size={16} />

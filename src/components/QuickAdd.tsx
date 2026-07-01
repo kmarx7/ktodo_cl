@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CalendarPlus, Clock, Plus } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { parseQuickAdd } from "@/lib/parse";
+import { useT } from "@/lib/i18n";
 import type { ItemType } from "@/types/item";
 
 interface QuickAddProps {
@@ -13,6 +14,7 @@ interface QuickAddProps {
 
 export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
   const addItem = useItemStore((state) => state.addItem);
+  const t = useT();
   const [text, setText] = useState("");
   const [amountText, setAmountText] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -23,11 +25,22 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
   const timeInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (showDate) dateInputRef.current?.showPicker?.();
+    if (!showDate) return;
+    try {
+      dateInputRef.current?.showPicker?.();
+    } catch {
+      // showPicker() can reject (e.g. no transient user activation); the
+      // field is still visible and tappable, so this is a silent no-op.
+    }
   }, [showDate]);
 
   useEffect(() => {
-    if (showTime) timeInputRef.current?.showPicker?.();
+    if (!showTime) return;
+    try {
+      timeInputRef.current?.showPicker?.();
+    } catch {
+      // See the showDate effect above.
+    }
   }, [showTime]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -72,7 +85,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         <div className="flex gap-2">
           {showDate && (
             <label className="flex flex-1 items-center gap-2 rounded-lg border border-neutral-300 px-2 py-1 dark:border-neutral-700">
-              <span className="text-xs text-neutral-400">Date</span>
+              <span className="text-xs text-neutral-400">{t("quickAdd.date")}</span>
               <input
                 ref={dateInputRef}
                 type="date"
@@ -84,7 +97,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
           )}
           {showTime && (
             <label className="flex flex-1 items-center gap-2 rounded-lg border border-neutral-300 px-2 py-1 dark:border-neutral-700">
-              <span className="text-xs text-neutral-400">Time</span>
+              <span className="text-xs text-neutral-400">{t("quickAdd.time")}</span>
               <input
                 ref={timeInputRef}
                 type="time"
@@ -101,7 +114,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={showAmountHint ? "Item name" : "Add a task"}
+          placeholder={showAmountHint ? t("quickAdd.itemName") : t("quickAdd.addTask")}
           className="min-w-0 flex-1 rounded-full border border-neutral-300 px-4 py-2.5 text-base outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
         />
         {showAmountHint && (
@@ -109,7 +122,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
             value={amountText}
             onChange={(e) => setAmountText(e.target.value)}
             inputMode="decimal"
-            placeholder="Amount"
+            placeholder={t("quickAdd.amount")}
             className="w-24 shrink-0 rounded-full border border-neutral-300 px-3 py-2.5 text-base outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
           />
         )}
@@ -119,7 +132,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         <button
           type="button"
           onClick={() => setShowDate((v) => !v)}
-          aria-label="Set date"
+          aria-label={t("quickAdd.setDate")}
           className={`touch-manipulation rounded-lg p-3 ${showDate ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800"}`}
         >
           <CalendarPlus size={18} />
@@ -127,7 +140,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         <button
           type="button"
           onClick={() => setShowTime((v) => !v)}
-          aria-label="Set time (alarm)"
+          aria-label={t("quickAdd.setTime")}
           className={`touch-manipulation rounded-lg p-3 ${showTime ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800"}`}
         >
           <Clock size={18} />
@@ -135,7 +148,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         <span className="flex-1" />
         <button
           type="submit"
-          aria-label="Add"
+          aria-label={t("quickAdd.add")}
           className="flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center rounded-full bg-neutral-900 text-white disabled:opacity-30 dark:bg-white dark:text-neutral-900"
           disabled={!text.trim()}
         >
