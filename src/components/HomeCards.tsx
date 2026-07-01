@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { CheckSquare, Lightbulb, ShoppingCart, Wallet } from "lucide-react";
 import { useItemStore } from "@/lib/store";
-import { ITEM_TYPE_LABEL, ITEM_TYPE_HAS_AMOUNT, type ItemType } from "@/types/item";
+import { ITEM_TYPE_HAS_AMOUNT, type ItemType } from "@/types/item";
 import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { formatCurrency } from "@/lib/parse";
+import { ITEM_TYPE_TRANSLATION_KEY, formatOpenCount, useLocale, useT } from "@/lib/i18n";
 
 const CARDS: { type: ItemType; href: string; icon: typeof CheckSquare }[] = [
   { type: "todo", href: "/todo", icon: CheckSquare },
@@ -16,6 +17,8 @@ const CARDS: { type: ItemType; href: string; icon: typeof CheckSquare }[] = [
 
 export function HomeCards() {
   const items = useItemStore((state) => state.items);
+  const t = useT();
+  const locale = useLocale();
 
   return (
     <div className="grid grid-cols-2 gap-3 p-4">
@@ -38,12 +41,12 @@ export function HomeCards() {
             </span>
             <div>
               <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                {ITEM_TYPE_LABEL[type]}
+                {t(ITEM_TYPE_TRANSLATION_KEY[type])}
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 {ITEM_TYPE_HAS_AMOUNT[type] && remaining > 0
                   ? formatCurrency(remaining)
-                  : `${openCount} open`}
+                  : formatOpenCount(openCount, locale)}
               </p>
             </div>
           </Link>

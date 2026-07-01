@@ -16,11 +16,21 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useItemStore } from "@/lib/store";
-import type { Item } from "@/types/item";
+import { useSettingsStore } from "@/lib/settingsStore";
+import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
+import { ITEM_TYPES, type Item } from "@/types/item";
 import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { ItemRow } from "./ItemRow";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY_KEYS: TranslationKey[] = [
+  "calendar.weekday.0",
+  "calendar.weekday.1",
+  "calendar.weekday.2",
+  "calendar.weekday.3",
+  "calendar.weekday.4",
+  "calendar.weekday.5",
+  "calendar.weekday.6",
+];
 
 function groupByDate(items: Item[]): Map<string, Item[]> {
   const map = new Map<string, Item[]>();
@@ -35,10 +45,18 @@ function groupByDate(items: Item[]): Map<string, Item[]> {
 
 export function CalendarView() {
   const items = useItemStore((state) => state.items);
+  const calendarCategories = useSettingsStore((state) => state.calendarCategories);
+  const t = useT();
+  const locale = useLocale();
   const [month, setMonth] = useState(() => new Date());
   const [selected, setSelected] = useState(() => format(new Date(), "yyyy-MM-dd"));
 
-  const byDate = useMemo(() => groupByDate(items), [items]);
+  const visibleItems = useMemo(
+    () => items.filter((item) => calendarCategories.includes(item.type)),
+    [items, calendarCategories]
+  );
+
+  const byDate = useMemo(() => groupByDate(visibleItems), [visibleItems]);
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(month));
@@ -47,6 +65,10 @@ export function CalendarView() {
   }, [month]);
 
   const selectedItems = byDate.get(selected) ?? [];
+  const groupedSelected = ITEM_TYPES.map((type) => ({
+    type,
+    items: selectedItems.filter((item) => item.type === type),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -54,16 +76,18 @@ export function CalendarView() {
         <button
           type="button"
           onClick={() => setMonth((m) => subMonths(m, 1))}
-          aria-label="Previous month"
+          aria-label={t("calendar.prevMonth")}
           className="flex h-11 w-11 touch-manipulation items-center justify-center"
         >
           <ChevronLeft size={20} />
         </button>
-        <p className="text-sm font-semibold">{format(month, "MMMM yyyy")}</p>
+        <p className="text-sm font-semibold">
+          {format(month, locale === "ko" ? "yyyy년 M월" : "MMMM yyyy")}
+        </p>
         <button
           type="button"
           onClick={() => setMonth((m) => addMonths(m, 1))}
-          aria-label="Next month"
+          aria-label={t("calendar.nextMonth")}
           className="flex h-11 w-11 touch-manipulation items-center justify-center"
         >
           <ChevronRight size={20} />
@@ -71,9 +95,9 @@ export function CalendarView() {
       </div>
 
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
-        {WEEKDAYS.map((day) => (
-          <div key={day} className="py-1">
-            {day}
+        {WEEKDAY_KEYS.map((key) => (
+          <div key={key} className="py-1">
+            {t(key)}
           </div>
         ))}
       </div>
@@ -111,14 +135,21 @@ export function CalendarView() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 pb-[env(safe-area-inset-bottom)] dark:border-neutral-900">
-        {selectedItems.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-neutral-400">No items due this day</p>
+        {groupedSelected.length === 0 ? (
+          <p className="px-4 py-6 text-center text-sm text-neutral-400">{t("calendar.noItems")}</p>
         ) : (
-          <ul>
-            {selectedItems.map((item) => (
-              <ItemRow key={item.id} item={item} />
-            ))}
-          </ul>
+          groupedSelected.map(({ type, items: groupItems }) => (
+            <div key={type}>
+              <p className="px-4 pt-3 pb-1 text-xs font-semibold text-neutral-400">
+                {t(ITEM_TYPE_TRANSLATION_KEY[type])}
+              </p>
+              <ul>
+                {groupItems.map((item) => (
+                  <ItemRow key={item.id} item={item} />
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </div>
     </div>
