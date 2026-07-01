@@ -3,20 +3,28 @@ interface ParsedQuickAdd {
   amount: number | null;
 }
 
-const AMOUNT_PATTERN = /([\d,]+)\s*원/;
+const AMOUNT_PATTERNS = [/\$\s?([\d,]+)/, /([\d,]+)\s*won\b/i, /₩\s?([\d,]+)/];
 
 export function parseQuickAdd(raw: string): ParsedQuickAdd {
-  const match = raw.match(AMOUNT_PATTERN);
-  if (!match) {
-    return { title: raw.trim(), amount: null };
+  for (const pattern of AMOUNT_PATTERNS) {
+    const match = raw.match(pattern);
+    if (!match) continue;
+    const amount = Number(match[1].replace(/,/g, ""));
+    if (!Number.isFinite(amount)) continue;
+    const start = match.index ?? 0;
+    const title = (raw.slice(0, start) + raw.slice(start + match[0].length))
+      .replace(/\s+/g, " ")
+      .trim();
+    return { title: title || raw.trim(), amount };
   }
-  const amount = Number(match[1].replace(/,/g, ""));
-  const title = (raw.slice(0, match.index) + raw.slice((match.index ?? 0) + match[0].length))
-    .replace(/\s+/g, " ")
-    .trim();
-  return { title: title || raw.trim(), amount: Number.isFinite(amount) ? amount : null };
+  return { title: raw.trim(), amount: null };
 }
 
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "KRW",
+});
+
 export function formatCurrency(amount: number): string {
-  return `${amount.toLocaleString("ko-KR")}원`;
+  return CURRENCY_FORMATTER.format(amount);
 }

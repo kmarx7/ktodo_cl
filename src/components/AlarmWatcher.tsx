@@ -21,7 +21,7 @@ export function AlarmWatcher() {
         if (dueAt <= now && now - dueAt < STALE_THRESHOLD_MS) {
           markNotified(item.id);
           playBeep();
-          notify(`${ITEM_TYPE_LABEL[item.type]} 알림`, item.title);
+          notify(`${ITEM_TYPE_LABEL[item.type]} reminder`, item.title);
         }
       }
     };

@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+import { HomeCards } from "@/components/HomeCards";
 
 export default function Home() {
-  redirect("/todo");
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+      <HomeCards />
+    </div>
+  );
 }
