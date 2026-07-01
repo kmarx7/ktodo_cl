@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarPlus, Clock, Plus } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { parseQuickAdd } from "@/lib/parse";
@@ -14,24 +14,49 @@ interface QuickAddProps {
 export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
   const addItem = useItemStore((state) => state.addItem);
   const [text, setText] = useState("");
+  const [amountText, setAmountText] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [dueTime, setDueTime] = useState("");
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const timeInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showDate) dateInputRef.current?.showPicker?.();
+  }, [showDate]);
+
+  useEffect(() => {
+    if (showTime) timeInputRef.current?.showPicker?.();
+  }, [showTime]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = text.trim();
     if (!trimmed) return;
-    const { title, amount } = parseQuickAdd(trimmed);
+
+    let title = trimmed;
+    let amount: number | null = null;
+    if (showAmountHint) {
+      const enteredAmount = Number(amountText.replace(/,/g, ""));
+      if (amountText.trim() && Number.isFinite(enteredAmount)) {
+        amount = enteredAmount;
+      } else {
+        const parsed = parseQuickAdd(trimmed);
+        title = parsed.title;
+        amount = parsed.amount;
+      }
+    }
+
     addItem({
       type,
       title,
-      amount: showAmountHint ? amount : null,
+      amount,
       dueDate: dueDate || null,
       dueTime: dueTime || null,
     });
     setText("");
+    setAmountText("");
     setDueDate("");
     setDueTime("");
     setShowDate(false);
@@ -46,23 +71,50 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
       {(showDate || showTime) && (
         <div className="flex gap-2">
           {showDate && (
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="flex-1 rounded-lg border border-neutral-300 px-2 py-1 text-base dark:border-neutral-700 dark:bg-neutral-900"
-            />
+            <label className="flex flex-1 items-center gap-2 rounded-lg border border-neutral-300 px-2 py-1 dark:border-neutral-700">
+              <span className="text-xs text-neutral-400">Date</span>
+              <input
+                ref={dateInputRef}
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="min-w-0 flex-1 bg-transparent text-base outline-none dark:bg-neutral-900"
+              />
+            </label>
           )}
           {showTime && (
-            <input
-              type="time"
-              value={dueTime}
-              onChange={(e) => setDueTime(e.target.value)}
-              className="flex-1 rounded-lg border border-neutral-300 px-2 py-1 text-base dark:border-neutral-700 dark:bg-neutral-900"
-            />
+            <label className="flex flex-1 items-center gap-2 rounded-lg border border-neutral-300 px-2 py-1 dark:border-neutral-700">
+              <span className="text-xs text-neutral-400">Time</span>
+              <input
+                ref={timeInputRef}
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+                className="min-w-0 flex-1 bg-transparent text-base outline-none dark:bg-neutral-900"
+              />
+            </label>
           )}
         </div>
       )}
+
+      <div className="flex items-center gap-2">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={showAmountHint ? "Item name" : "Add a task"}
+          className="min-w-0 flex-1 rounded-full border border-neutral-300 px-4 py-2.5 text-base outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+        />
+        {showAmountHint && (
+          <input
+            value={amountText}
+            onChange={(e) => setAmountText(e.target.value)}
+            inputMode="decimal"
+            placeholder="Amount"
+            className="w-24 shrink-0 rounded-full border border-neutral-300 px-3 py-2.5 text-base outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+          />
+        )}
+      </div>
+
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -80,12 +132,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
         >
           <Clock size={18} />
         </button>
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={showAmountHint ? "e.g. Milk $5" : "Add a task"}
-          className="min-w-0 flex-1 rounded-full border border-neutral-300 px-4 py-2.5 text-base outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
-        />
+        <span className="flex-1" />
         <button
           type="submit"
           aria-label="Add"
