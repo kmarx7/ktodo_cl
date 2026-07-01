@@ -1,0 +1,14 @@
+{
+  "name": "할 일 / 살 것 / 낼 돈",
+  "short_name": "TodoCL",
+  "description": "Todo, To Buy, To Pay를 하나로 관리하는 빠른 체크리스트 앱",
+  "start_url": "/todo",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#171717",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
