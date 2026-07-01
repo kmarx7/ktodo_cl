@@ -1,8 +1,8 @@
 {
-  "name": "할 일 / 살 것 / 낼 돈",
+  "name": "TodoCL — To Do, To Pay, To Buy, To Think",
   "short_name": "TodoCL",
-  "description": "Todo, To Buy, To Pay를 하나로 관리하는 빠른 체크리스트 앱",
-  "start_url": "/todo",
+  "description": "A fast checklist app for To Do, To Pay, To Buy, and To Think",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",

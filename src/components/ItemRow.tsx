@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import { Trash2 } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { formatCurrency } from "@/lib/parse";
@@ -7,9 +8,8 @@ import type { Item } from "@/types/item";
 
 function formatDue(dueDate: string | null, dueTime: string | null): string | null {
   if (!dueDate) return null;
-  const [, month, day] = dueDate.split("-");
-  const datePart = `${Number(month)}월 ${Number(day)}일`;
-  return dueTime ? `${datePart} ${dueTime}` : datePart;
+  const datePart = format(new Date(`${dueDate}T00:00`), "MMM d");
+  return dueTime ? `${datePart}, ${dueTime}` : datePart;
 }
 
 function isOverdue(dueDate: string | null, dueTime: string | null): boolean {
@@ -25,25 +25,29 @@ export function ItemRow({ item }: { item: Item }) {
   const overdue = !item.checked && isOverdue(item.dueDate, item.dueTime);
 
   return (
-    <li className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3 dark:border-neutral-900">
+    <li className="flex items-center gap-2 border-b border-neutral-100 pl-2 pr-3 dark:border-neutral-900">
       <button
         type="button"
         onClick={() => toggleChecked(item.id)}
-        aria-label={item.checked ? "체크 해제" : "체크"}
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-          item.checked
-            ? "border-neutral-900 bg-neutral-900 dark:border-white dark:bg-white"
-            : "border-neutral-300 dark:border-neutral-700"
-        }`}
+        aria-label={item.checked ? "Uncheck" : "Check"}
+        className="flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center"
       >
-        {item.checked && (
-          <svg viewBox="0 0 16 16" className="h-3 w-3 fill-white dark:fill-neutral-900">
-            <path d="M6.5 11.5 3 8l1-1 2.5 2.5L12 4l1 1z" />
-          </svg>
-        )}
+        <span
+          className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
+            item.checked
+              ? "border-neutral-900 bg-neutral-900 dark:border-white dark:bg-white"
+              : "border-neutral-300 dark:border-neutral-700"
+          }`}
+        >
+          {item.checked && (
+            <svg viewBox="0 0 16 16" className="h-3 w-3 fill-white dark:fill-neutral-900">
+              <path d="M6.5 11.5 3 8l1-1 2.5 2.5L12 4l1 1z" />
+            </svg>
+          )}
+        </span>
       </button>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 py-3">
         <p
           className={`truncate text-sm ${
             item.checked
@@ -71,8 +75,8 @@ export function ItemRow({ item }: { item: Item }) {
       <button
         type="button"
         onClick={() => deleteItem(item.id)}
-        aria-label="삭제"
-        className="shrink-0 text-neutral-300 hover:text-red-500 dark:text-neutral-700"
+        aria-label="Delete"
+        className="flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-neutral-300 active:text-red-500 dark:text-neutral-700"
       >
         <Trash2 size={16} />
       </button>

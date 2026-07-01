@@ -16,16 +16,11 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useItemStore } from "@/lib/store";
-import type { Item, ItemType } from "@/types/item";
+import type { Item } from "@/types/item";
+import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { ItemRow } from "./ItemRow";
 
-const TYPE_DOT: Record<ItemType, string> = {
-  todo: "bg-blue-500",
-  tobuy: "bg-emerald-500",
-  topay: "bg-orange-500",
-};
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function groupByDate(items: Item[]): Map<string, Item[]> {
   const map = new Map<string, Item[]>();
@@ -55,12 +50,22 @@ export function CalendarView() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex shrink-0 items-center justify-between px-4 py-3">
-        <button type="button" onClick={() => setMonth((m) => subMonths(m, 1))} aria-label="이전 달">
+      <div className="flex shrink-0 items-center justify-between px-2 py-3">
+        <button
+          type="button"
+          onClick={() => setMonth((m) => subMonths(m, 1))}
+          aria-label="Previous month"
+          className="flex h-11 w-11 touch-manipulation items-center justify-center"
+        >
           <ChevronLeft size={20} />
         </button>
-        <p className="text-sm font-semibold">{format(month, "yyyy년 M월")}</p>
-        <button type="button" onClick={() => setMonth((m) => addMonths(m, 1))} aria-label="다음 달">
+        <p className="text-sm font-semibold">{format(month, "MMMM yyyy")}</p>
+        <button
+          type="button"
+          onClick={() => setMonth((m) => addMonths(m, 1))}
+          aria-label="Next month"
+          className="flex h-11 w-11 touch-manipulation items-center justify-center"
+        >
           <ChevronRight size={20} />
         </button>
       </div>
@@ -86,7 +91,7 @@ export function CalendarView() {
               key={key}
               type="button"
               onClick={() => setSelected(key)}
-              className={`flex flex-col items-center gap-0.5 rounded-lg py-1.5 text-xs ${
+              className={`flex min-h-11 touch-manipulation flex-col items-center gap-0.5 rounded-lg py-1.5 text-xs ${
                 selectedDay
                   ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
                   : inMonth
@@ -97,7 +102,7 @@ export function CalendarView() {
               {format(day, "d")}
               <span className="flex h-1.5 gap-0.5">
                 {types.map((type) => (
-                  <span key={type} className={`h-1.5 w-1.5 rounded-full ${TYPE_DOT[type]}`} />
+                  <span key={type} className={`h-1.5 w-1.5 rounded-full ${ITEM_TYPE_THEME[type].dot}`} />
                 ))}
               </span>
             </button>
@@ -105,9 +110,9 @@ export function CalendarView() {
         })}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 dark:border-neutral-900">
+      <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 pb-[env(safe-area-inset-bottom)] dark:border-neutral-900">
         {selectedItems.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-neutral-400">이 날에는 일정이 없어요</p>
+          <p className="px-4 py-6 text-center text-sm text-neutral-400">No items due this day</p>
         ) : (
           <ul>
             {selectedItems.map((item) => (
