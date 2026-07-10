@@ -34,6 +34,7 @@ export function HomeCards() {
           <Link
             key={type}
             href={href}
+            transitionTypes={["nav-forward"]}
             className={`flex min-h-[132px] touch-manipulation flex-col justify-between rounded-3xl p-4 active:scale-[0.97] transition-transform ${theme.cardBg}`}
           >
             <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${theme.iconBg} ${theme.iconText}`}>
