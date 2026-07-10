@@ -39,6 +39,7 @@ export function ItemRow({ item }: { item: Item }) {
   const [dragX, setDragX] = useState<number | null>(null);
   const start = useRef<{ x: number; y: number } | null>(null);
   const axis = useRef<"undecided" | "horizontal" | "vertical">("undecided");
+  const dragged = useRef(false);
 
   const due = formatDue(item.dueDate, item.dueTime, locale);
   const overdue = !item.checked && isOverdue(item.dueDate, item.dueTime);
@@ -50,6 +51,7 @@ export function ItemRow({ item }: { item: Item }) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     start.current = { x: e.clientX, y: e.clientY };
     axis.current = "undecided";
+    dragged.current = false;
   }
 
   function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
@@ -65,6 +67,7 @@ export function ItemRow({ item }: { item: Item }) {
         return;
       }
       axis.current = "horizontal";
+      dragged.current = true;
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
@@ -72,10 +75,16 @@ export function ItemRow({ item }: { item: Item }) {
     setDragX(next);
   }
 
-  function handlePointerUp() {
+  function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
+    // Release pointer capture if it was captured during horizontal drag
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
     if (!start.current || axis.current !== "horizontal" || dragX === null) {
       start.current = null;
       setDragX(null);
+      dragged.current = false;
       return;
     }
 
@@ -93,6 +102,7 @@ export function ItemRow({ item }: { item: Item }) {
     start.current = null;
     axis.current = "undecided";
     setDragX(null);
+    dragged.current = false;
   }
 
   function handleDelete() {
@@ -128,7 +138,13 @@ export function ItemRow({ item }: { item: Item }) {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onClick={() => isOpen && setOpenRow(null)}
+        onClick={() => {
+          if (dragged.current) {
+            dragged.current = false;
+            return;
+          }
+          if (isOpen) setOpenRow(null);
+        }}
         style={{
           transform: `translateX(${offset}px)`,
           transition: dragX === null ? "transform 200ms ease-out" : "none",
