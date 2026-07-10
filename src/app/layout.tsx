@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ViewTransition } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { HeaderBar } from "@/components/HeaderBar";
@@ -54,7 +55,15 @@ export default function RootLayout({
       <body className="flex h-dvh flex-col overflow-hidden overscroll-none bg-white dark:bg-neutral-950">
         <HeaderBar />
         <NotificationPermissionBanner />
-        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col">
+          <ViewTransition
+            enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "auto" }}
+            exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "auto" }}
+            default="auto"
+          >
+            {children}
+          </ViewTransition>
+        </main>
         <TabBar />
         <UndoToast />
         <AlarmWatcher />

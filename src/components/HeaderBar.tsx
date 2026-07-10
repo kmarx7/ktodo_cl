@@ -42,6 +42,7 @@ export function HeaderBar() {
     >
       <Link
         href="/"
+        transitionTypes={["nav-back"]}
         aria-label={t("nav.backHome")}
         className="touch-manipulation rounded-full p-2 text-neutral-500 active:bg-neutral-100 dark:text-neutral-400 dark:active:bg-neutral-900"
       >
