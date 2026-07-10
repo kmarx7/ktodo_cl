@@ -102,7 +102,6 @@ export function ItemRow({ item }: { item: Item }) {
     start.current = null;
     axis.current = "undecided";
     setDragX(null);
-    dragged.current = false;
   }
 
   function handleDelete() {
