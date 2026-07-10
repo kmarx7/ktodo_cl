@@ -5,6 +5,7 @@ import { HeaderBar } from "@/components/HeaderBar";
 import { AlarmWatcher } from "@/components/AlarmWatcher";
 import { NotificationPermissionBanner } from "@/components/NotificationPermissionBanner";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { UndoToast } from "@/components/UndoToast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,7 @@ export default function RootLayout({
         <HeaderBar />
         <NotificationPermissionBanner />
         <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <UndoToast />
         <AlarmWatcher />
         <ServiceWorkerRegister />
       </body>
