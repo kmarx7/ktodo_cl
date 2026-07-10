@@ -12,9 +12,12 @@ interface NewItemInput {
 
 interface ItemStore {
   items: Item[];
+  lastDeleted: Item | null;
   addItem: (input: NewItemInput) => void;
   toggleChecked: (id: string) => void;
   deleteItem: (id: string) => void;
+  restoreLastDeleted: () => void;
+  clearLastDeleted: () => void;
   updateItem: (id: string, patch: Partial<Item>) => void;
   markNotified: (id: string) => void;
 }
@@ -23,6 +26,7 @@ export const useItemStore = create<ItemStore>()(
   persist(
     (set) => ({
       items: [],
+      lastDeleted: null,
       addItem: (input) =>
         set((state) => ({
           items: [
@@ -49,7 +53,15 @@ export const useItemStore = create<ItemStore>()(
       deleteItem: (id) =>
         set((state) => ({
           items: state.items.filter((item) => item.id !== id),
+          lastDeleted: state.items.find((item) => item.id === id) ?? null,
         })),
+      restoreLastDeleted: () =>
+        set((state) =>
+          state.lastDeleted
+            ? { items: [state.lastDeleted, ...state.items], lastDeleted: null }
+            : state
+        ),
+      clearLastDeleted: () => set({ lastDeleted: null }),
       updateItem: (id, patch) =>
         set((state) => ({
           items: state.items.map((item) =>
@@ -63,6 +75,9 @@ export const useItemStore = create<ItemStore>()(
           ),
         })),
     }),
-    { name: "todo-cl-items" }
+    {
+      name: "todo-cl-items",
+      partialize: (state) => ({ items: state.items }),
+    }
   )
 );
