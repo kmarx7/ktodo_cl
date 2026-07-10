@@ -24,7 +24,7 @@ export function UndoToast() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5rem)] z-50 flex justify-center px-4">
-      <div className="pointer-events-auto flex animate-[undo-in_200ms_ease-out] items-center gap-3 rounded-full bg-neutral-900 py-2 pl-4 pr-2 text-sm text-white shadow-lg dark:bg-white dark:text-neutral-900">
+      <div className="pointer-events-auto flex animate-[undo-in_200ms_ease-out] motion-reduce:animate-none items-center gap-3 rounded-full bg-neutral-900 py-2 pl-4 pr-2 text-sm text-white shadow-lg dark:bg-white dark:text-neutral-900">
         <span className="truncate">{t("item.deleted")}</span>
         <button
           type="button"
