@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { HeaderBar } from "@/components/HeaderBar";
+import { TabBar } from "@/components/TabBar";
 import { AlarmWatcher } from "@/components/AlarmWatcher";
 import { NotificationPermissionBanner } from "@/components/NotificationPermissionBanner";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
@@ -54,6 +55,7 @@ export default function RootLayout({
         <HeaderBar />
         <NotificationPermissionBanner />
         <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <TabBar />
         <UndoToast />
         <AlarmWatcher />
         <ServiceWorkerRegister />

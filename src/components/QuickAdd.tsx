@@ -5,6 +5,7 @@ import { CalendarPlus, Clock, Plus } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { parseQuickAdd } from "@/lib/parse";
 import { useT } from "@/lib/i18n";
+import { tapFeedback } from "@/lib/haptics";
 import type { ItemType } from "@/types/item";
 
 interface QuickAddProps {
@@ -68,6 +69,7 @@ export function QuickAdd({ type, showAmountHint }: QuickAddProps) {
       dueDate: dueDate || null,
       dueTime: dueTime || null,
     });
+    tapFeedback(10);
     setText("");
     setAmountText("");
     setDueDate("");
