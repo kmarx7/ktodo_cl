@@ -49,6 +49,11 @@ const en = {
   "settings.language": "Language",
   "settings.calendarCategories": "Categories shown on Calendar",
   "settings.calendarCategoriesHint": "Choose which lists appear when you tap a day on the Calendar.",
+  "settings.premium": "Premium",
+  "premium.title": "Premium feature",
+  "premium.desc": "Unlock the Calendar and due-date reminders.",
+  "premium.unlock": "Unlock Premium",
+  "premium.active": "Premium active",
 } satisfies Record<string, string>;
 
 type Dict = Record<keyof typeof en, string>;
@@ -102,6 +107,11 @@ const ko: Dict = {
   "settings.language": "언어",
   "settings.calendarCategories": "캘린더에 표시할 카테고리",
   "settings.calendarCategoriesHint": "캘린더에서 날짜를 눌렀을 때 보여줄 목록을 선택하세요.",
+  "settings.premium": "프리미엄",
+  "premium.title": "프리미엄 기능",
+  "premium.desc": "캘린더와 마감일 알림을 잠금 해제하세요.",
+  "premium.unlock": "프리미엄 잠금 해제",
+  "premium.active": "프리미엄 이용 중",
 };
 
 const DICTS: Record<Locale, Dict> = { en, ko };

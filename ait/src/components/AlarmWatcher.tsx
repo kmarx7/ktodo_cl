@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useItemStore } from "@/lib/store";
+import { usePremiumStore } from "@/lib/premiumStore";
 import { notify, playBeep } from "@/lib/alarm";
 import { ITEM_TYPE_TRANSLATION_KEY, translate, useLocale } from "@/lib/i18n";
 
@@ -9,9 +10,13 @@ const STALE_THRESHOLD_MS = 5 * 60_000;
 export function AlarmWatcher() {
   const items = useItemStore((state) => state.items);
   const markNotified = useItemStore((state) => state.markNotified);
+  const isPremium = usePremiumStore((state) => state.isPremium);
   const locale = useLocale();
 
   useEffect(() => {
+    // Due-date reminders are a premium feature.
+    if (!isPremium) return;
+
     const tick = () => {
       const now = Date.now();
       for (const item of items) {
@@ -29,7 +34,7 @@ export function AlarmWatcher() {
     const id = setInterval(tick, CHECK_INTERVAL_MS);
     tick();
     return () => clearInterval(id);
-  }, [items, markNotified, locale]);
+  }, [items, markNotified, locale, isPremium]);
 
   return null;
 }

@@ -2,6 +2,7 @@ import type { IapProductListItem } from "@apps-in-toss/web-framework";
 import { IAP } from "@apps-in-toss/web-framework";
 import { useDialog } from "@toss/tds-mobile";
 import { useCallback, useEffect, useState } from "react";
+import { usePremiumStore } from "@/lib/premiumStore";
 
 interface UseInAppPurchaseReturn {
   products: IapProductListItem[];
@@ -43,10 +44,11 @@ export function useInAppPurchase(): UseInAppPurchaseReturn {
     fetchProducts();
   }, []);
 
-  const grantProduct = useCallback((orderId: string) => {
-    // TODO: 여기에 상품 지급 로직을 작성해주세요.
-
-    console.info(`상품 지급 처리: ${orderId}`);
+  const grantProduct = useCallback((_orderId: string) => {
+    // This app sells a single one-time "premium" unlock (Calendar + reminders),
+    // so any successfully paid order grants premium. Persisted on-device via
+    // the premium store; no backend/receipt server (local-first app).
+    usePremiumStore.getState().grantPremium();
   }, []);
 
   /**

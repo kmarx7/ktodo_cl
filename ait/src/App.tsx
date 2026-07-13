@@ -10,9 +10,13 @@ import { CalendarView } from "@/components/CalendarView";
 import { SettingsView } from "@/components/SettingsView";
 import { UndoToast } from "@/components/UndoToast";
 import { AlarmWatcher } from "@/components/AlarmWatcher";
+import { Paywall } from "@/components/Paywall";
 import { InAppPurchasePage } from "@/pages/InAppPurchasePage";
+import { usePremiumStore } from "@/lib/premiumStore";
 
 function ScreenBody({ screen }: { screen: Exclude<Screen, "iap"> }) {
+  const isPremium = usePremiumStore((state) => state.isPremium);
+
   if (screen === "home") {
     return (
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-[env(safe-area-inset-bottom)]">
@@ -20,7 +24,8 @@ function ScreenBody({ screen }: { screen: Exclude<Screen, "iap"> }) {
       </div>
     );
   }
-  if (screen === "calendar") return <CalendarView />;
+  // Calendar (and its due-date reminders) is a premium feature.
+  if (screen === "calendar") return isPremium ? <CalendarView /> : <Paywall />;
   if (screen === "settings") return <SettingsView />;
   // Remaining screens are the four item categories.
   return <ListPage type={screen} showAmount={ITEM_TYPE_HAS_AMOUNT[screen]} />;

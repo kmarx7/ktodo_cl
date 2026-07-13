@@ -1,8 +1,9 @@
-import { Sparkles } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { useSettingsStore, type Locale } from "@/lib/settingsStore";
 import { ITEM_TYPE_TRANSLATION_KEY, useT } from "@/lib/i18n";
 import { ITEM_TYPES } from "@/types/item";
 import { useNav } from "@/lib/nav";
+import { usePremiumStore } from "@/lib/premiumStore";
 
 const LANGUAGES: { locale: Locale; label: string }[] = [
   { locale: "en", label: "English" },
@@ -15,26 +16,34 @@ export function SettingsView() {
   const calendarCategories = useSettingsStore((state) => state.calendarCategories);
   const toggleCalendarCategory = useSettingsStore((state) => state.toggleCalendarCategory);
   const go = useNav((state) => state.go);
+  const isPremium = usePremiumStore((state) => state.isPremium);
   const t = useT();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4 pb-[env(safe-area-inset-bottom)]">
       <section>
         <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
-          {locale === "ko" ? "프리미엄" : "Premium"}
+          {t("settings.premium")}
         </h2>
         <button
           type="button"
           onClick={() => go("iap")}
-          className="flex w-full touch-manipulation items-center gap-3 rounded-xl border border-neutral-200 p-3 text-left text-sm dark:border-neutral-800"
+          disabled={isPremium}
+          className="flex w-full touch-manipulation items-center gap-3 rounded-xl border border-neutral-200 p-3 text-left text-sm disabled:opacity-100 dark:border-neutral-800"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/60 dark:text-violet-300">
-            <Sparkles size={18} />
+          <span
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+              isPremium
+                ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300"
+                : "bg-violet-100 text-violet-600 dark:bg-violet-900/60 dark:text-violet-300"
+            }`}
+          >
+            {isPremium ? <Check size={18} /> : <Sparkles size={18} />}
           </span>
           <span className="flex-1 font-medium text-neutral-900 dark:text-neutral-100">
-            {locale === "ko" ? "프리미엄 구매" : "Go Premium"}
+            {isPremium ? t("premium.active") : t("premium.unlock")}
           </span>
-          <span className="text-neutral-300 dark:text-neutral-600">›</span>
+          {!isPremium && <span className="text-neutral-300 dark:text-neutral-600">›</span>}
         </button>
       </section>
 
