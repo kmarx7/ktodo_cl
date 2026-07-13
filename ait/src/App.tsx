@@ -1,70 +1,61 @@
-import { Asset, Button, Top } from "@toss/tds-mobile";
-import "./App.css";
-import { InAppPurchasePage } from "./pages/InAppPurchasePage";
-import { useState } from "react";
+import { Top } from "@toss/tds-mobile";
+import { useNav, type Screen } from "@/lib/nav";
+import { useT } from "@/lib/i18n";
+import { ITEM_TYPE_HAS_AMOUNT } from "@/types/item";
+import { HeaderBar } from "@/components/HeaderBar";
+import { TabBar } from "@/components/TabBar";
+import { HomeCards } from "@/components/HomeCards";
+import { ListPage } from "@/components/ListPage";
+import { CalendarView } from "@/components/CalendarView";
+import { SettingsView } from "@/components/SettingsView";
+import { UndoToast } from "@/components/UndoToast";
+import { AlarmWatcher } from "@/components/AlarmWatcher";
+import { InAppPurchasePage } from "@/pages/InAppPurchasePage";
+
+function ScreenBody({ screen }: { screen: Exclude<Screen, "iap"> }) {
+  if (screen === "home") {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+        <HomeCards />
+      </div>
+    );
+  }
+  if (screen === "calendar") return <CalendarView />;
+  if (screen === "settings") return <SettingsView />;
+  // Remaining screens are the four item categories.
+  return <ListPage type={screen} showAmount={ITEM_TYPE_HAS_AMOUNT[screen]} />;
+}
 
 function App() {
-  const [page, setPage] = useState<string | null>(null);
+  const screen = useNav((state) => state.screen);
+  const go = useNav((state) => state.go);
+  const t = useT();
 
-  if (page === "iap") return <InAppPurchasePage onBack={() => setPage(null)} />;
+  // The in-app-purchase flow is a standalone screen with its own TDS header.
+  if (screen === "iap") {
+    return (
+      <>
+        <InAppPurchasePage onBack={() => go("settings")} />
+        <AlarmWatcher />
+      </>
+    );
+  }
 
   return (
     <>
-      <Top
-        title={<Top.TitleParagraph size={22}>반가워요</Top.TitleParagraph>}
-        subtitleBottom={
-          <Top.SubtitleParagraph size={17}>
-            앱인토스 개발을 시작해 보세요.
-          </Top.SubtitleParagraph>
-        }
-      />
+      {screen === "home" ? (
+        <Top title={<Top.TitleParagraph size={22}>{t("app.name")}</Top.TitleParagraph>} />
+      ) : (
+        <HeaderBar screen={screen} />
+      )}
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          padding: "24px",
-        }}
-      >
-        <Button
-          as="a"
-          variant="weak"
-          href="https://developers-apps-in-toss.toss.im"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          개발자센터
-        </Button>
-        <Button
-          as="a"
-          variant="weak"
-          href="https://techchat-apps-in-toss.toss.im"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          개발자 커뮤니티
-        </Button>
-        <Button color="dark" variant="weak" onClick={() => setPage("iap")}>
-          인앱결제 테스트하기
-        </Button>
-      </div>
+      <main className="flex min-h-0 flex-1 flex-col">
+        <ScreenBody screen={screen} />
+      </main>
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: "24px",
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <Asset.Image
-          alt="apps in toss logo"
-          frameShape={{ width: 160 }}
-          backgroundColor="transparent"
-          src={`${import.meta.env.BASE_URL}appsintoss-logo.png`}
-        />
-      </div>
+      <TabBar />
+      <UndoToast />
+      <AlarmWatcher />
     </>
   );
 }
