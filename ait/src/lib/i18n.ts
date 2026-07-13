@@ -54,6 +54,9 @@ const en = {
   "premium.desc": "Unlock the Calendar and due-date reminders.",
   "premium.unlock": "Unlock Premium",
   "premium.active": "Premium active",
+  "edit.title": "Edit",
+  "edit.save": "Save",
+  "edit.cancel": "Cancel",
 } satisfies Record<string, string>;
 
 type Dict = Record<keyof typeof en, string>;
@@ -112,6 +115,9 @@ const ko: Dict = {
   "premium.desc": "캘린더와 마감일 알림을 잠금 해제하세요.",
   "premium.unlock": "프리미엄 잠금 해제",
   "premium.active": "프리미엄 이용 중",
+  "edit.title": "수정",
+  "edit.save": "저장",
+  "edit.cancel": "취소",
 };
 
 const DICTS: Record<Locale, Dict> = { en, ko };

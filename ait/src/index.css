@@ -41,3 +41,22 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Edit sheet: backdrop fade + panel slide-up */
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

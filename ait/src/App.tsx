@@ -10,6 +10,7 @@ import { CalendarView } from "@/components/CalendarView";
 import { SettingsView } from "@/components/SettingsView";
 import { UndoToast } from "@/components/UndoToast";
 import { AlarmWatcher } from "@/components/AlarmWatcher";
+import { EditItemSheet } from "@/components/EditItemSheet";
 import { Paywall } from "@/components/Paywall";
 import { InAppPurchasePage } from "@/pages/InAppPurchasePage";
 import { usePremiumStore } from "@/lib/premiumStore";
@@ -60,6 +61,7 @@ function App() {
 
       <TabBar />
       <UndoToast />
+      <EditItemSheet />
       <AlarmWatcher />
     </>
   );

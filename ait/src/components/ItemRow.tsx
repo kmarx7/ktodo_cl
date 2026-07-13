@@ -30,6 +30,7 @@ export function ItemRow({ item }: { item: Item }) {
   const deleteItem = useItemStore((state) => state.deleteItem);
   const openRowId = useUiStore((state) => state.openRowId);
   const setOpenRow = useUiStore((state) => state.setOpenRow);
+  const setEditingId = useUiStore((state) => state.setEditingId);
   const t = useT();
   const locale = useLocale();
 
@@ -140,7 +141,12 @@ export function ItemRow({ item }: { item: Item }) {
             dragged.current = false;
             return;
           }
-          if (isOpen) setOpenRow(null);
+          // A tap while the swipe drawer is open just closes it; otherwise edit.
+          if (isOpen) {
+            setOpenRow(null);
+          } else {
+            setEditingId(item.id);
+          }
         }}
         style={{
           transform: `translateX(${offset}px)`,
