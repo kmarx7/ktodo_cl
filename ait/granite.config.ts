@@ -1,11 +1,11 @@
 import { defineConfig } from "@apps-in-toss/web-framework/config";
 
 export default defineConfig({
-  appName: "ait",
+  appName: "todocl",
   brand: {
-    displayName: "앱 이름", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
-    primaryColor: "#655DFF", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
-    icon: "", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
+    displayName: "할일·낼돈·살것·생각",
+    primaryColor: "#3182F6",
+    icon: "", // TODO: 배포 전 실제 앱 아이콘 이미지 주소로 채우기
   },
   web: {
     host: "localhost",
