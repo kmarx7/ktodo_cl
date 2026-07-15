@@ -135,8 +135,9 @@ export function CalendarView() {
           <button
             type="button"
             onClick={goToday}
-            className="touch-manipulation rounded-full border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-500 active:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-400 dark:active:bg-neutral-800"
+            className="flex touch-manipulation items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 active:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:active:bg-blue-900/60"
           >
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
             {t("calendar.today")}
           </button>
         </div>
@@ -175,44 +176,40 @@ export function CalendarView() {
           const inMonth = isSameMonth(day, month);
           const selectedDay = isSameDay(day, selectedDate);
 
-          const numColor = selectedDay
-            ? ""
-            : !inMonth
-              ? "text-neutral-300 dark:text-neutral-700"
-              : dow === 0
-                ? "text-red-500"
-                : dow === 6
-                  ? "text-blue-500"
-                  : "text-neutral-700 dark:text-neutral-300";
+          const isTodayCell = isToday(day);
+          const numColor = !inMonth
+            ? "text-neutral-300 dark:text-neutral-700"
+            : dow === 0
+              ? "text-red-500"
+              : dow === 6
+                ? "text-blue-500"
+                : "text-neutral-700 dark:text-neutral-300";
+          // Modern date marker: filled blue circle for the selected day, a blue
+          // ring for today (when not selected), otherwise a plain number.
+          const numCircle = selectedDay
+            ? "bg-blue-500 font-semibold text-white"
+            : isTodayCell
+              ? "font-bold text-blue-600 ring-1 ring-blue-300 dark:text-blue-400 dark:ring-blue-500/60"
+              : numColor;
 
           return (
             <button
               key={key}
               type="button"
               onClick={() => setSelected(key)}
-              className={`relative flex min-h-[54px] touch-manipulation flex-col items-center gap-0 rounded-lg py-1 text-xs ${
-                selectedDay ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : ""
-              } ${isToday(day) && !selectedDay ? "ring-1 ring-neutral-400" : ""}`}
+              className="relative flex min-h-[56px] touch-manipulation flex-col items-center gap-0 rounded-lg py-1 text-xs"
             >
               {count >= 3 && (
-                <span
-                  className={`absolute right-1 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-[9px] font-bold ${
-                    selectedDay
-                      ? "bg-white text-neutral-900 dark:bg-neutral-900 dark:text-white"
-                      : "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                  }`}
-                >
+                <span className="absolute right-1 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white">
                   {count}
                 </span>
               )}
-              <span className={numColor}>{format(day, "d")}</span>
               <span
-                className={`text-[8px] leading-tight ${
-                  selectedDay
-                    ? "text-neutral-300 dark:text-neutral-600"
-                    : "text-neutral-400 dark:text-neutral-500"
-                }`}
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-[13px] ${numCircle}`}
               >
+                {format(day, "d")}
+              </span>
+              <span className="text-[8px] leading-tight text-neutral-400 dark:text-neutral-500">
                 {lunarCellLabel(day)}
               </span>
               <span className={`mt-0.5 flex h-1.5 gap-0.5 ${allDone ? "opacity-40" : ""}`}>
@@ -221,11 +218,7 @@ export function CalendarView() {
                 ))}
               </span>
               {payTotal > 0 && (
-                <span
-                  className={`text-[9px] font-bold leading-none ${
-                    selectedDay ? "text-orange-200 dark:text-orange-500" : "text-orange-500"
-                  }`}
-                >
+                <span className="text-[9px] font-bold leading-none text-orange-500">
                   {formatCompactWon(payTotal)}
                 </span>
               )}
