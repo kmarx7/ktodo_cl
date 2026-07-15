@@ -1,7 +1,7 @@
 import { defineConfig } from "@apps-in-toss/web-framework/config";
 
 export default defineConfig({
-  appName: "todocl",
+  appName: "todowhat",
   brand: {
     displayName: "할일·낼돈·살것·생각",
     primaryColor: "#3182F6",
