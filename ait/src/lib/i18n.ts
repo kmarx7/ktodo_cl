@@ -64,8 +64,8 @@ export type TranslationKey = keyof typeof en;
 
 const ko: Dict = {
   "app.name": "왓투두",
-  "itemType.todo": "할 일",
-  "itemType.topay": "낼 돈",
+  "itemType.todo": "할 것",
+  "itemType.topay": "낼 것",
   "itemType.tobuy": "살 것",
   "itemType.tothink": "생각할 것",
   "nav.home": "홈",
@@ -88,9 +88,9 @@ const ko: Dict = {
   "item.delete": "삭제",
   "item.deleted": "삭제됨",
   "item.undo": "되돌리기",
-  "empty.todo": "할 일을 추가해보세요",
+  "empty.todo": "할 것을 추가해보세요",
   "empty.tobuy": "살 것을 추가해보세요",
-  "empty.topay": "낼 돈을 추가해보세요",
+  "empty.topay": "낼 것을 추가해보세요",
   "empty.tothink": "생각할 것을 추가해보세요",
   "notification.prompt": "앱이 열려 있을 때 알림을 받으려면 알림을 켜주세요",
   "notification.enable": "알림 켜기",
