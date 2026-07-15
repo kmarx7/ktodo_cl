@@ -8,7 +8,6 @@ export interface Item {
   dueDate: string | null;
   dueTime: string | null;
   checked: boolean;
-  notified: boolean;
   createdAt: number;
 }
 

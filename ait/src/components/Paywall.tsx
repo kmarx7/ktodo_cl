@@ -1,4 +1,4 @@
-import { CalendarDays, Bell, Lock } from "lucide-react";
+import { CalendarDays, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { useNav } from "@/lib/nav";
 
@@ -24,10 +24,6 @@ export function Paywall() {
         <span className="flex items-center gap-2">
           <CalendarDays size={18} className="text-violet-500" />
           {t("nav.calendar")}
-        </span>
-        <span className="flex items-center gap-2">
-          <Bell size={18} className="text-violet-500" />
-          {t("alarm.reminder")}
         </span>
       </div>
 

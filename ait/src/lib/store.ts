@@ -20,7 +20,6 @@ interface ItemStore {
   restoreLastDeleted: () => void;
   clearLastDeleted: () => void;
   updateItem: (id: string, patch: Partial<Item>) => void;
-  markNotified: (id: string) => void;
 }
 
 export const useItemStore = create<ItemStore>()(
@@ -39,7 +38,6 @@ export const useItemStore = create<ItemStore>()(
               dueDate: input.dueDate,
               dueTime: input.dueTime,
               checked: false,
-              notified: false,
               createdAt: Date.now(),
             },
             ...state.items,
@@ -67,12 +65,6 @@ export const useItemStore = create<ItemStore>()(
         set((state) => ({
           items: state.items.map((item) =>
             item.id === id ? { ...item, ...patch } : item
-          ),
-        })),
-      markNotified: (id) =>
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, notified: true } : item
           ),
         })),
     }),

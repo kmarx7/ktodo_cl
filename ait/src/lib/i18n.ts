@@ -2,7 +2,7 @@ import { useSettingsStore, type Locale } from "./settingsStore";
 import type { ItemType } from "@/types/item";
 
 const en = {
-  "app.name": "TodoCL",
+  "app.name": "What To Do",
   "itemType.todo": "To Do",
   "itemType.topay": "To Pay",
   "itemType.tobuy": "To Buy",
@@ -18,7 +18,7 @@ const en = {
   "quickAdd.addTask": "Add a task",
   "quickAdd.amount": "Amount",
   "quickAdd.setDate": "Set date",
-  "quickAdd.setTime": "Set time (alarm)",
+  "quickAdd.setTime": "Set due time",
   "quickAdd.date": "Date",
   "quickAdd.time": "Time",
   "quickAdd.add": "Add",
@@ -34,7 +34,6 @@ const en = {
   "notification.prompt": "Turn on notifications to get reminders while the app is open",
   "notification.enable": "Enable",
   "notification.dismiss": "Dismiss",
-  "alarm.reminder": "reminder",
   "calendar.weekday.0": "Sun",
   "calendar.weekday.1": "Mon",
   "calendar.weekday.2": "Tue",
@@ -51,7 +50,7 @@ const en = {
   "settings.calendarCategoriesHint": "Choose which lists appear when you tap a day on the Calendar.",
   "settings.premium": "Premium",
   "premium.title": "Premium feature",
-  "premium.desc": "Unlock the Calendar and due-date reminders.",
+  "premium.desc": "Unlock the Calendar view.",
   "premium.unlock": "Unlock Premium",
   "premium.active": "Premium active",
   "edit.title": "Edit",
@@ -63,7 +62,7 @@ type Dict = Record<keyof typeof en, string>;
 export type TranslationKey = keyof typeof en;
 
 const ko: Dict = {
-  "app.name": "TodoCL",
+  "app.name": "왓투두",
   "itemType.todo": "할 일",
   "itemType.topay": "낼 돈",
   "itemType.tobuy": "살 것",
@@ -79,7 +78,7 @@ const ko: Dict = {
   "quickAdd.addTask": "할 일 입력",
   "quickAdd.amount": "금액",
   "quickAdd.setDate": "날짜 설정",
-  "quickAdd.setTime": "시간(알람) 설정",
+  "quickAdd.setTime": "마감 시간 설정",
   "quickAdd.date": "날짜",
   "quickAdd.time": "시간",
   "quickAdd.add": "추가",
@@ -95,7 +94,6 @@ const ko: Dict = {
   "notification.prompt": "앱이 열려 있을 때 알림을 받으려면 알림을 켜주세요",
   "notification.enable": "알림 켜기",
   "notification.dismiss": "닫기",
-  "alarm.reminder": "알림",
   "calendar.weekday.0": "일",
   "calendar.weekday.1": "월",
   "calendar.weekday.2": "화",
@@ -112,7 +110,7 @@ const ko: Dict = {
   "settings.calendarCategoriesHint": "캘린더에서 날짜를 눌렀을 때 보여줄 목록을 선택하세요.",
   "settings.premium": "프리미엄",
   "premium.title": "프리미엄 기능",
-  "premium.desc": "캘린더와 마감일 알림을 잠금 해제하세요.",
+  "premium.desc": "캘린더 보기를 잠금 해제하세요.",
   "premium.unlock": "프리미엄 잠금 해제",
   "premium.active": "프리미엄 이용 중",
   "edit.title": "수정",

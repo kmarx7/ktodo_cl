@@ -9,7 +9,6 @@ import { ListPage } from "@/components/ListPage";
 import { CalendarView } from "@/components/CalendarView";
 import { SettingsView } from "@/components/SettingsView";
 import { UndoToast } from "@/components/UndoToast";
-import { AlarmWatcher } from "@/components/AlarmWatcher";
 import { EditItemSheet } from "@/components/EditItemSheet";
 import { Paywall } from "@/components/Paywall";
 import { InAppPurchasePage } from "@/pages/InAppPurchasePage";
@@ -42,12 +41,7 @@ function App() {
 
   // The in-app-purchase flow is a standalone screen with its own TDS header.
   if (screen === "iap") {
-    return (
-      <>
-        <InAppPurchasePage onBack={() => go("settings")} />
-        <AlarmWatcher />
-      </>
-    );
+    return <InAppPurchasePage onBack={() => go("settings")} />;
   }
 
   return (
@@ -65,7 +59,6 @@ function App() {
       <TabBar />
       <UndoToast />
       <EditItemSheet />
-      <AlarmWatcher />
     </>
   );
 }

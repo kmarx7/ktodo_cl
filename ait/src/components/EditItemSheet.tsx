@@ -59,17 +59,11 @@ function EditSheetForm({ item }: { item: Item }) {
       amount = amountText.trim() && Number.isFinite(entered) ? entered : null;
     }
 
-    const nextDate = dueDate || null;
-    const nextTime = dueTime || null;
-    const dueChanged = nextDate !== item.dueDate || nextTime !== item.dueTime;
-
     updateItem(item.id, {
       title: trimmed,
       amount,
-      dueDate: nextDate,
-      dueTime: nextTime,
-      // Re-arm the reminder if the due date/time moved.
-      ...(dueChanged ? { notified: false } : {}),
+      dueDate: dueDate || null,
+      dueTime: dueTime || null,
     });
     tapFeedback(10);
     setEditingId(null);
