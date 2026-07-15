@@ -18,6 +18,7 @@ import { useSettingsStore } from "@/lib/settingsStore";
 import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
 import { ITEM_TYPES, type Item } from "@/types/item";
 import { ITEM_TYPE_THEME } from "@/lib/theme";
+import { lunarCellLabel } from "@/lib/lunar";
 import { ItemRow } from "./ItemRow";
 
 const WEEKDAY_KEYS: TranslationKey[] = [
@@ -81,6 +82,25 @@ export function CalendarView() {
     setSelected(format(now, "yyyy-MM-dd"));
   };
 
+  // Moving months moves the selection into the new month so the list below
+  // follows: today if the new month is the current one, else the first day
+  // that has items, else the 1st.
+  const goMonth = (delta: number) => {
+    const next = delta > 0 ? addMonths(month, 1) : subMonths(month, 1);
+    setMonth(next);
+    const today = new Date();
+    if (isSameMonth(next, today)) {
+      setSelected(format(today, "yyyy-MM-dd"));
+      return;
+    }
+    const monthDays = eachDayOfInterval({
+      start: startOfMonth(next),
+      end: endOfMonth(next),
+    });
+    const firstWithItems = monthDays.find((d) => byDate.has(format(d, "yyyy-MM-dd")));
+    setSelected(format(firstWithItems ?? startOfMonth(next), "yyyy-MM-dd"));
+  };
+
   const selectedDate = new Date(`${selected}T00:00`);
   const selectedItems = byDate.get(selected) ?? [];
   const groupedSelected = ITEM_TYPES.map((type) => ({
@@ -102,7 +122,7 @@ export function CalendarView() {
       <div className="flex shrink-0 items-center justify-between px-2 py-3">
         <button
           type="button"
-          onClick={() => setMonth((m) => subMonths(m, 1))}
+          onClick={() => goMonth(-1)}
           aria-label={t("calendar.prevMonth")}
           className="flex h-11 w-11 touch-manipulation items-center justify-center"
         >
@@ -122,7 +142,7 @@ export function CalendarView() {
         </div>
         <button
           type="button"
-          onClick={() => setMonth((m) => addMonths(m, 1))}
+          onClick={() => goMonth(1)}
           aria-label={t("calendar.nextMonth")}
           className="flex h-11 w-11 touch-manipulation items-center justify-center"
         >
@@ -170,7 +190,7 @@ export function CalendarView() {
               key={key}
               type="button"
               onClick={() => setSelected(key)}
-              className={`relative flex min-h-11 touch-manipulation flex-col items-center gap-0.5 rounded-lg py-1.5 text-xs ${
+              className={`relative flex min-h-[54px] touch-manipulation flex-col items-center gap-0 rounded-lg py-1 text-xs ${
                 selectedDay ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : ""
               } ${isToday(day) && !selectedDay ? "ring-1 ring-neutral-400" : ""}`}
             >
@@ -186,7 +206,16 @@ export function CalendarView() {
                 </span>
               )}
               <span className={numColor}>{format(day, "d")}</span>
-              <span className={`flex h-1.5 gap-0.5 ${allDone ? "opacity-40" : ""}`}>
+              <span
+                className={`text-[8px] leading-tight ${
+                  selectedDay
+                    ? "text-neutral-300 dark:text-neutral-600"
+                    : "text-neutral-400 dark:text-neutral-500"
+                }`}
+              >
+                {lunarCellLabel(day)}
+              </span>
+              <span className={`mt-0.5 flex h-1.5 gap-0.5 ${allDone ? "opacity-40" : ""}`}>
                 {types.map((type) => (
                   <span key={type} className={`h-1.5 w-1.5 rounded-full ${ITEM_TYPE_THEME[type].dot}`} />
                 ))}
