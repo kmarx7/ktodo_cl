@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: "할일·낼돈·살것·생각",
     primaryColor: "#3182F6",
-    icon: "", // TODO: 배포 전 실제 앱 아이콘 이미지 주소로 채우기
+    icon: "icon.png", // public/icon.png — 콘솔 등록 시 절대 URL이 필요하면 교체
   },
   web: {
     host: "localhost",
