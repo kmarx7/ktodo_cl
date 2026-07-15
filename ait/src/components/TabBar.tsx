@@ -2,6 +2,7 @@ import { CalendarDays, Home, Lock, Settings } from "lucide-react";
 import { useT, type TranslationKey } from "@/lib/i18n";
 import { TAB_SCREENS, useNav, type Screen } from "@/lib/nav";
 import { usePremiumStore } from "@/lib/premiumStore";
+import { MONETIZATION_ENABLED } from "@/lib/features";
 
 const TABS: { screen: Screen; icon: typeof Home; labelKey: TranslationKey; premium?: boolean }[] = [
   { screen: "home", icon: Home, labelKey: "nav.home" },
@@ -24,7 +25,7 @@ export function TabBar() {
     >
       {TABS.map(({ screen: tabScreen, icon: Icon, labelKey, premium }) => {
         const active = screen === tabScreen;
-        const locked = premium && !isPremium;
+        const locked = MONETIZATION_ENABLED && premium && !isPremium;
         return (
           <button
             key={tabScreen}

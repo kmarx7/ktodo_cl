@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useItemStore } from "@/lib/store";
 import { usePremiumStore } from "@/lib/premiumStore";
+import { MONETIZATION_ENABLED } from "@/lib/features";
 import { notify, playBeep } from "@/lib/alarm";
 import { ITEM_TYPE_TRANSLATION_KEY, translate, useLocale } from "@/lib/i18n";
 
@@ -14,8 +15,8 @@ export function AlarmWatcher() {
   const locale = useLocale();
 
   useEffect(() => {
-    // Due-date reminders are a premium feature.
-    if (!isPremium) return;
+    // Due-date reminders are a premium feature when monetization is on.
+    if (MONETIZATION_ENABLED && !isPremium) return;
 
     const tick = () => {
       const now = Date.now();

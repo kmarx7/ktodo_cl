@@ -4,6 +4,7 @@ import { ITEM_TYPE_TRANSLATION_KEY, useT } from "@/lib/i18n";
 import { ITEM_TYPES } from "@/types/item";
 import { useNav } from "@/lib/nav";
 import { usePremiumStore } from "@/lib/premiumStore";
+import { MONETIZATION_ENABLED } from "@/lib/features";
 
 const LANGUAGES: { locale: Locale; label: string }[] = [
   { locale: "en", label: "English" },
@@ -21,31 +22,33 @@ export function SettingsView() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4 pb-[env(safe-area-inset-bottom)]">
-      <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
-          {t("settings.premium")}
-        </h2>
-        <button
-          type="button"
-          onClick={() => go("iap")}
-          disabled={isPremium}
-          className="flex w-full touch-manipulation items-center gap-3 rounded-xl border border-neutral-200 p-3 text-left text-sm disabled:opacity-100 dark:border-neutral-800"
-        >
-          <span
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${
-              isPremium
-                ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300"
-                : "bg-violet-100 text-violet-600 dark:bg-violet-900/60 dark:text-violet-300"
-            }`}
+      {MONETIZATION_ENABLED && (
+        <section>
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+            {t("settings.premium")}
+          </h2>
+          <button
+            type="button"
+            onClick={() => go("iap")}
+            disabled={isPremium}
+            className="flex w-full touch-manipulation items-center gap-3 rounded-xl border border-neutral-200 p-3 text-left text-sm disabled:opacity-100 dark:border-neutral-800"
           >
-            {isPremium ? <Check size={18} /> : <Sparkles size={18} />}
-          </span>
-          <span className="flex-1 font-medium text-neutral-900 dark:text-neutral-100">
-            {isPremium ? t("premium.active") : t("premium.unlock")}
-          </span>
-          {!isPremium && <span className="text-neutral-300 dark:text-neutral-600">›</span>}
-        </button>
-      </section>
+            <span
+              className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                isPremium
+                  ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300"
+                  : "bg-violet-100 text-violet-600 dark:bg-violet-900/60 dark:text-violet-300"
+              }`}
+            >
+              {isPremium ? <Check size={18} /> : <Sparkles size={18} />}
+            </span>
+            <span className="flex-1 font-medium text-neutral-900 dark:text-neutral-100">
+              {isPremium ? t("premium.active") : t("premium.unlock")}
+            </span>
+            {!isPremium && <span className="text-neutral-300 dark:text-neutral-600">›</span>}
+          </button>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
