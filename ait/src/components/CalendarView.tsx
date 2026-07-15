@@ -135,9 +135,8 @@ export function CalendarView() {
           <button
             type="button"
             onClick={goToday}
-            className="flex touch-manipulation items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 active:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:active:bg-blue-900/60"
+            className="touch-manipulation rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 active:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:active:bg-blue-900/60"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
             {t("calendar.today")}
           </button>
         </div>
