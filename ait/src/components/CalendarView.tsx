@@ -18,7 +18,7 @@ import { useItemStore } from "@/lib/store";
 import { useSettingsStore } from "@/lib/settingsStore";
 import { useAnniversaryStore } from "@/lib/anniversaryStore";
 import { useUiStore } from "@/lib/uiStore";
-import { anniversariesByDate, anniversaryDateText } from "@/lib/anniversary";
+import { anniversariesByDate, anniversaryDateText, anniversaryOccurrences } from "@/lib/anniversary";
 import { useLocale, useT, type TranslationKey } from "@/lib/i18n";
 import { type Item } from "@/types/item";
 import { ANNIVERSARY_EMOJI } from "@/types/anniversary";
@@ -115,25 +115,28 @@ export function CalendarView() {
 
   const selectedDate = new Date(`${selected}T00:00`);
 
-  // Month agenda: every date in the visible month that has items or
-  // anniversaries, sorted, each with its anniversaries (first) and items.
+  // This month's anniversaries (shown above the grid, kept apart from to-dos).
+  const monthAnnivs = useMemo(
+    () =>
+      anniversaryOccurrences(anniversaries, startOfMonth(month), endOfMonth(month)).sort(
+        (a, b) => a.date.getTime() - b.date.getTime()
+      ),
+    [anniversaries, month]
+  );
+
+  // Month agenda (below the grid): every date in the visible month that has
+  // to-do items, sorted, with a D-day badge.
   const agenda = useMemo(() => {
     const start = startOfMonth(month);
     const end = endOfMonth(month);
-    const annOcc = anniversariesByDate(anniversaries, start, end);
-    const keys = new Set<string>();
-    for (const key of byDate.keys()) {
-      const d = new Date(`${key}T00:00`);
-      if (d >= start && d <= end) keys.add(key);
-    }
-    for (const key of annOcc.keys()) keys.add(key);
-    return [...keys].sort().map((key) => ({
-      key,
-      date: new Date(`${key}T00:00`),
-      items: byDate.get(key) ?? [],
-      annivs: annOcc.get(key) ?? [],
-    }));
-  }, [month, byDate, anniversaries]);
+    return [...byDate.keys()]
+      .filter((key) => {
+        const d = new Date(`${key}T00:00`);
+        return d >= start && d <= end;
+      })
+      .sort()
+      .map((key) => ({ key, date: new Date(`${key}T00:00`), items: byDate.get(key) ?? [] }));
+  }, [month, byDate]);
 
   // Tapping a grid day scrolls its agenda section into view.
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -173,6 +176,28 @@ export function CalendarView() {
           <ChevronRight size={20} />
         </button>
       </div>
+
+      {monthAnnivs.length > 0 && (
+        <div className="mb-2 flex shrink-0 flex-col gap-1 px-4">
+          {monthAnnivs.map(({ anniversary: a, date }) => (
+            <button
+              key={`${a.id}-${date.getTime()}`}
+              type="button"
+              onClick={() => setEditingAnniversaryId(a.id)}
+              className="flex touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2 text-left dark:bg-pink-950/30"
+            >
+              <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
+                {a.title}
+              </span>
+              <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
+                {format(date, locale === "ko" ? "M월 d일" : "MMM d")}
+                {a.calendar === "lunar" ? ` · ${anniversaryDateText(a, locale)}` : ""}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (
@@ -264,7 +289,7 @@ export function CalendarView() {
             {t("calendar.emptyMonth")}
           </p>
         ) : (
-          agenda.map(({ key, date, items: dayItems, annivs }) => {
+          agenda.map(({ key, date, items: dayItems }) => {
             const dd = differenceInCalendarDays(date, new Date());
             const wd = t(WEEKDAY_KEYS[date.getDay()]);
             const dateLabel =
@@ -295,30 +320,11 @@ export function CalendarView() {
                     </span>
                   ) : null}
                 </div>
-                {annivs.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => setEditingAnniversaryId(a.id)}
-                    className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
-                  >
-                    <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
-                      {a.title}
-                    </span>
-                    <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
-                      {anniversaryDateText(a, locale)}
-                      {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
-                    </span>
-                  </button>
-                ))}
-                {dayItems.length > 0 && (
-                  <ul>
-                    {dayItems.map((item) => (
-                      <ItemRow key={item.id} item={item} />
-                    ))}
-                  </ul>
-                )}
+                <ul>
+                  {dayItems.map((item) => (
+                    <ItemRow key={item.id} item={item} />
+                  ))}
+                </ul>
               </div>
             );
           })
