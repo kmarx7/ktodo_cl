@@ -17,7 +17,6 @@ import { useItemStore } from "@/lib/store";
 import { useSettingsStore } from "@/lib/settingsStore";
 import { useAnniversaryStore } from "@/lib/anniversaryStore";
 import { useUiStore } from "@/lib/uiStore";
-import { useNav } from "@/lib/nav";
 import { anniversariesByDate, anniversaryDateText } from "@/lib/anniversary";
 import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
 import { ITEM_TYPES, type Item } from "@/types/item";
@@ -65,7 +64,6 @@ export function CalendarView() {
   const anniversaries = useAnniversaryStore((state) => state.items);
   const calendarCategories = useSettingsStore((state) => state.calendarCategories);
   const setEditingAnniversaryId = useUiStore((state) => state.setEditingAnniversaryId);
-  const go = useNav((state) => state.go);
   const t = useT();
   const locale = useLocale();
   const [month, setMonth] = useState(() => new Date());
@@ -163,14 +161,6 @@ export function CalendarView() {
           <ChevronRight size={20} />
         </button>
       </div>
-
-      <button
-        type="button"
-        onClick={() => go("remember")}
-        className="mx-4 mb-2 flex w-fit touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
-      >
-        🎂 {t("remember.entry")}
-      </button>
 
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (

@@ -1,4 +1,3 @@
-import { Top } from "@toss/tds-mobile";
 import { useNav, type Screen } from "@/lib/nav";
 import { useT } from "@/lib/i18n";
 import { ITEM_TYPE_HAS_AMOUNT } from "@/types/item";
@@ -52,7 +51,18 @@ function App() {
   return (
     <>
       {screen === "home" ? (
-        <Top title={<Top.TitleParagraph size={22}>{t("app.name")}</Top.TitleParagraph>} />
+        <header className="flex shrink-0 items-center justify-between px-4 py-3 pt-[max(env(safe-area-inset-top),0.75rem)]">
+          <h1 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-100">
+            {t("app.name")}
+          </h1>
+          <button
+            type="button"
+            onClick={() => go("remember")}
+            className="flex touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-3 py-1.5 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
+          >
+            🎂 {t("remember.entry")}
+          </button>
+        </header>
       ) : (
         <HeaderBar screen={screen} />
       )}
