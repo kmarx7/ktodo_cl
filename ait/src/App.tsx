@@ -61,7 +61,7 @@ function App() {
             onClick={() => go("remember")}
             className="flex touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-3 py-1.5 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
           >
-            <Star size={13} className="fill-current" />
+            <Star size={13} className="fill-amber-400 text-amber-400" />
             {t("remember.entry")}
           </button>
         </header>
