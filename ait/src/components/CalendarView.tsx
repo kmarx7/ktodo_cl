@@ -162,6 +162,28 @@ export function CalendarView() {
         </button>
       </div>
 
+      {selectedAnnivs.length > 0 && (
+        <div className="mb-2 flex shrink-0 flex-col gap-1 px-4">
+          {selectedAnnivs.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setEditingAnniversaryId(a.id)}
+              className="flex touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
+            >
+              <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
+                {a.title}
+              </span>
+              <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
+                {anniversaryDateText(a, locale)}
+                {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (
           <div
@@ -253,24 +275,6 @@ export function CalendarView() {
             <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
           )}
         </div>
-
-        {selectedAnnivs.map((a) => (
-          <button
-            key={a.id}
-            type="button"
-            onClick={() => setEditingAnniversaryId(a.id)}
-            className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
-          >
-            <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
-              {a.title}
-            </span>
-            <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
-              {anniversaryDateText(a, locale)}
-              {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
-            </span>
-          </button>
-        ))}
 
         {groupedSelected.length === 0 && selectedAnnivs.length === 0 ? (
           <p className="px-4 py-6 text-center text-sm text-neutral-400">{t("calendar.noItems")}</p>
