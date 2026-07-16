@@ -7,6 +7,9 @@ interface UiStore {
   /** id of the item currently being edited in the edit sheet, if any */
   editingId: string | null;
   setEditingId: (id: string | null) => void;
+  /** anniversary edit sheet: null = closed, "new" = adding, else the id being edited */
+  editingAnniversaryId: string | null;
+  setEditingAnniversaryId: (id: string | null) => void;
 }
 
 export const useUiStore = create<UiStore>()((set) => ({
@@ -14,4 +17,6 @@ export const useUiStore = create<UiStore>()((set) => ({
   setOpenRow: (id) => set({ openRowId: id }),
   editingId: null,
   setEditingId: (id) => set({ editingId: id }),
+  editingAnniversaryId: null,
+  setEditingAnniversaryId: (id) => set({ editingAnniversaryId: id }),
 }));

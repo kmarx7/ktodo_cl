@@ -2,7 +2,7 @@ import { useSettingsStore, type Locale } from "./settingsStore";
 import type { ItemType } from "@/types/item";
 
 const en = {
-  "app.name": "What To Do",
+  "app.name": "미리꼭",
   "itemType.todo": "To Do",
   "itemType.topay": "To Pay",
   "itemType.tobuy": "To Buy",
@@ -57,13 +57,32 @@ const en = {
   "edit.title": "Edit",
   "edit.save": "Save",
   "edit.cancel": "Cancel",
+  "remember.title": "Anniversaries",
+  "remember.entry": "Remember",
+  "remember.add": "Add",
+  "remember.empty": "Add birthdays, anniversaries, and memorial days to remember.",
+  "remember.upcoming": "Upcoming",
+  "kind.birthday": "Birthday",
+  "kind.anniversary": "Anniversary",
+  "kind.memorial": "Memorial",
+  "kind.etc": "Other",
+  "anniv.name": "Name",
+  "anniv.kind": "Type",
+  "anniv.calendar": "Calendar",
+  "anniv.solar": "Solar",
+  "anniv.lunar": "Lunar",
+  "anniv.date": "Date",
+  "anniv.repeat": "Repeat",
+  "anniv.yearly": "Every year",
+  "anniv.once": "Once",
+  "anniv.year": "Year",
 } satisfies Record<string, string>;
 
 type Dict = Record<keyof typeof en, string>;
 export type TranslationKey = keyof typeof en;
 
 const ko: Dict = {
-  "app.name": "왓투두",
+  "app.name": "미리꼭",
   "itemType.todo": "할 것",
   "itemType.topay": "낼 것",
   "itemType.tobuy": "살 것",
@@ -118,6 +137,25 @@ const ko: Dict = {
   "edit.title": "수정",
   "edit.save": "저장",
   "edit.cancel": "취소",
+  "remember.title": "기억할 것",
+  "remember.entry": "기억할 것",
+  "remember.add": "추가",
+  "remember.empty": "생일·기념일·추도일을 기억해 두세요.",
+  "remember.upcoming": "다가오는 기념일",
+  "kind.birthday": "생일",
+  "kind.anniversary": "기념일",
+  "kind.memorial": "추도일",
+  "kind.etc": "기타",
+  "anniv.name": "이름",
+  "anniv.kind": "종류",
+  "anniv.calendar": "달력",
+  "anniv.solar": "양력",
+  "anniv.lunar": "음력",
+  "anniv.date": "날짜",
+  "anniv.repeat": "반복",
+  "anniv.yearly": "매년",
+  "anniv.once": "1회만",
+  "anniv.year": "연도",
 };
 
 const DICTS: Record<Locale, Dict> = { en, ko };

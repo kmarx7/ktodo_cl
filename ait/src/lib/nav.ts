@@ -7,7 +7,7 @@ import type { ItemType } from "@/types/item";
  * The original app used Next.js file routing (next/link + usePathname). The
  * App-in-Toss scaffold has no router, so we drive screens from a small store.
  */
-export type Screen = "home" | ItemType | "calendar" | "settings" | "iap";
+export type Screen = "home" | ItemType | "calendar" | "settings" | "iap" | "remember";
 
 /** Screens that show the bottom tab bar (the original "root" routes). */
 export const TAB_SCREENS: Screen[] = ["home", "calendar", "settings"];

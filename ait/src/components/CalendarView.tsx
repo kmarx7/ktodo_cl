@@ -15,8 +15,13 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { useSettingsStore } from "@/lib/settingsStore";
+import { useAnniversaryStore } from "@/lib/anniversaryStore";
+import { useUiStore } from "@/lib/uiStore";
+import { useNav } from "@/lib/nav";
+import { anniversariesByDate, anniversaryDateText } from "@/lib/anniversary";
 import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
 import { ITEM_TYPES, type Item } from "@/types/item";
+import { ANNIVERSARY_EMOJI } from "@/types/anniversary";
 import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { lunarCellLabel } from "@/lib/lunar";
 import { ItemRow } from "./ItemRow";
@@ -57,7 +62,10 @@ function formatCompactWon(n: number): string {
 
 export function CalendarView() {
   const items = useItemStore((state) => state.items);
+  const anniversaries = useAnniversaryStore((state) => state.items);
   const calendarCategories = useSettingsStore((state) => state.calendarCategories);
+  const setEditingAnniversaryId = useUiStore((state) => state.setEditingAnniversaryId);
+  const go = useNav((state) => state.go);
   const t = useT();
   const locale = useLocale();
   const [month, setMonth] = useState(() => new Date());
@@ -75,6 +83,11 @@ export function CalendarView() {
     const end = endOfWeek(endOfMonth(month));
     return eachDayOfInterval({ start, end });
   }, [month]);
+
+  const annivByDate = useMemo(
+    () => anniversariesByDate(anniversaries, days[0], days[days.length - 1]),
+    [anniversaries, days]
+  );
 
   const goToday = () => {
     const now = new Date();
@@ -116,6 +129,7 @@ export function CalendarView() {
   const selCount = selectedItems.length;
   const selCountLabel =
     locale === "ko" ? `${selCount}건` : `${selCount} item${selCount !== 1 ? "s" : ""}`;
+  const selectedAnnivs = annivByDate.get(selected) ?? [];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -150,6 +164,14 @@ export function CalendarView() {
         </button>
       </div>
 
+      <button
+        type="button"
+        onClick={() => go("remember")}
+        className="mx-4 mb-2 flex w-fit touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
+      >
+        🎂 {t("remember.entry")}
+      </button>
+
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (
           <div
@@ -176,6 +198,7 @@ export function CalendarView() {
           const selectedDay = isSameDay(day, selectedDate);
 
           const isTodayCell = isToday(day);
+          const dayAnnivs = annivByDate.get(key) ?? [];
           const numColor = !inMonth
             ? "text-neutral-300 dark:text-neutral-700"
             : dow === 0
@@ -184,12 +207,14 @@ export function CalendarView() {
                 ? "text-blue-500"
                 : "text-neutral-700 dark:text-neutral-300";
           // Modern date marker: filled blue circle for the selected day, a blue
-          // ring for today (when not selected), otherwise a plain number.
+          // ring for today (when not selected), rose for anniversary days.
           const numCircle = selectedDay
             ? "bg-blue-500 font-semibold text-white"
             : isTodayCell
               ? "font-bold text-blue-600 ring-1 ring-blue-300 dark:text-blue-400 dark:ring-blue-500/60"
-              : numColor;
+              : dayAnnivs.length > 0
+                ? "font-bold text-pink-600 dark:text-pink-400"
+                : numColor;
 
           return (
             <button
@@ -198,6 +223,11 @@ export function CalendarView() {
               onClick={() => setSelected(key)}
               className="relative flex min-h-[56px] touch-manipulation flex-col items-center gap-0 rounded-lg py-1 text-xs"
             >
+              {dayAnnivs.length > 0 && (
+                <span className="absolute left-1 top-0 text-[11px] leading-none">
+                  {ANNIVERSARY_EMOJI[dayAnnivs[0].kind]}
+                </span>
+              )}
               {count >= 3 && (
                 <span className="absolute right-1 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white">
                   {count}
@@ -233,7 +263,26 @@ export function CalendarView() {
             <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
           )}
         </div>
-        {groupedSelected.length === 0 ? (
+
+        {selectedAnnivs.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            onClick={() => setEditingAnniversaryId(a.id)}
+            className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
+          >
+            <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
+              {a.title}
+            </span>
+            <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
+              {anniversaryDateText(a, locale)}
+              {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
+            </span>
+          </button>
+        ))}
+
+        {groupedSelected.length === 0 && selectedAnnivs.length === 0 ? (
           <p className="px-4 py-6 text-center text-sm text-neutral-400">{t("calendar.noItems")}</p>
         ) : (
           groupedSelected.map(({ type, items: groupItems }) => (

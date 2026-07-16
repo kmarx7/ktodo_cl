@@ -16,9 +16,11 @@ export function HeaderBar({ screen }: { screen: Exclude<Screen, "home"> }) {
     ? t(ITEM_TYPE_TRANSLATION_KEY[screen])
     : screen === "settings"
       ? t("settings.title")
-      : screen === "iap"
-        ? "" // IAP renders as a standalone screen with its own header; never shown here
-        : t("nav.calendar");
+      : screen === "remember"
+        ? t("remember.title")
+        : screen === "iap"
+          ? "" // IAP renders as a standalone screen with its own header; never shown here
+          : t("nav.calendar");
 
   return (
     <header

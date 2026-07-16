@@ -3,7 +3,7 @@ import { defineConfig } from "@apps-in-toss/web-framework/config";
 export default defineConfig({
   appName: "todowhat",
   brand: {
-    displayName: "왓투두 · 할일부터 결제까지",
+    displayName: "미리꼭 · 할일부터 결제까지",
     primaryColor: "#3182F6",
     icon: "icon.png", // public/icon.png — 콘솔 등록 시 절대 URL이 필요하면 교체
   },

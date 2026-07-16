@@ -24,3 +24,16 @@ export function lunarCellLabel(date: Date): string {
   const { month, day, isLeap } = solarToLunar(date);
   return day === 1 ? `${isLeap ? "윤" : ""}${month}.${day}` : `${day}`;
 }
+
+/**
+ * Solar Date for a given lunar month/day in a specific year (leap month ignored).
+ * If the day doesn't exist that lunar month, clamps to the 29th.
+ */
+export function lunarToSolar(year: number, month: number, day: number): Date {
+  const r = lib.lunar2solar(year, month, day, false);
+  if (r) return new Date(r.cYear, r.cMonth - 1, r.cDay);
+  const fallback = lib.lunar2solar(year, month, 29, false);
+  if (fallback) return new Date(fallback.cYear, fallback.cMonth - 1, fallback.cDay);
+  // Extremely unlikely; return the solar month/day as a last resort.
+  return new Date(year, month - 1, Math.min(day, 28));
+}

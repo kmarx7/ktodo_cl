@@ -10,6 +10,9 @@ import { CalendarView } from "@/components/CalendarView";
 import { SettingsView } from "@/components/SettingsView";
 import { UndoToast } from "@/components/UndoToast";
 import { EditItemSheet } from "@/components/EditItemSheet";
+import { UpcomingAnniversaries } from "@/components/UpcomingAnniversaries";
+import { RememberScreen } from "@/components/RememberScreen";
+import { AnniversaryEditSheet } from "@/components/AnniversaryEditSheet";
 import { Paywall } from "@/components/Paywall";
 import { InAppPurchasePage } from "@/pages/InAppPurchasePage";
 import { usePremiumStore } from "@/lib/premiumStore";
@@ -23,6 +26,7 @@ function ScreenBody({ screen }: { screen: Exclude<Screen, "iap"> }) {
   if (screen === "home") {
     return (
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+        <UpcomingAnniversaries />
         <HomeCards />
       </div>
     );
@@ -30,6 +34,7 @@ function ScreenBody({ screen }: { screen: Exclude<Screen, "iap"> }) {
   // Calendar (and its due-date reminders) is a premium feature when monetized.
   if (screen === "calendar") return canUseCalendar ? <CalendarView /> : <Paywall />;
   if (screen === "settings") return <SettingsView />;
+  if (screen === "remember") return <RememberScreen />;
   // Remaining screens are the four item categories.
   return <ListPage type={screen} showAmount={ITEM_TYPE_HAS_AMOUNT[screen]} />;
 }
@@ -59,6 +64,7 @@ function App() {
       <TabBar />
       <UndoToast />
       <EditItemSheet />
+      <AnniversaryEditSheet />
     </>
   );
 }
