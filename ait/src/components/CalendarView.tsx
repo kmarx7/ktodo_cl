@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   addMonths,
+  differenceInCalendarDays,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
@@ -57,19 +58,6 @@ function groupByDate(items: Item[]): Map<string, Item[]> {
     map.set(item.dueDate, list);
   }
   return map;
-}
-
-/** Compact currency for a calendar cell, e.g. 800000 → "₩80만", 17000 → "₩1.7만". */
-function formatCompactWon(n: number): string {
-  if (n >= 100_000_000) {
-    const v = n / 100_000_000;
-    return `₩${Number.isInteger(v) ? v : v.toFixed(1)}억`;
-  }
-  if (n >= 10_000) {
-    const v = n / 10_000;
-    return `₩${Number.isInteger(v) ? v : v.toFixed(1)}만`;
-  }
-  return `₩${n.toLocaleString()}`;
 }
 
 export function CalendarView() {
@@ -132,6 +120,7 @@ export function CalendarView() {
     items: selectedItems.filter((item) => item.type === type),
   })).filter((group) => group.items.length > 0);
 
+  const selDday = differenceInCalendarDays(selectedDate, new Date());
   const selWeekday = t(WEEKDAY_KEYS[selectedDate.getDay()]);
   const selDateLabel =
     locale === "ko"
@@ -193,9 +182,6 @@ export function CalendarView() {
           const count = dayItems.length;
           const types = Array.from(new Set(dayItems.map((item) => item.type)));
           const allDone = count > 0 && dayItems.every((item) => item.checked);
-          const payTotal = dayItems
-            .filter((item) => item.type === "topay")
-            .reduce((sum, item) => sum + (item.amount ?? 0), 0);
           const dow = day.getDay();
           const inMonth = isSameMonth(day, month);
           const selectedDay = isSameDay(day, selectedDate);
@@ -250,22 +236,28 @@ export function CalendarView() {
                   return <Icon key={type} size={11} strokeWidth={2.5} className={ITEM_ICON_COLOR[type]} />;
                 })}
               </span>
-              {payTotal > 0 && (
-                <span className="text-[9px] font-bold leading-none text-orange-500">
-                  {formatCompactWon(payTotal)}
-                </span>
-              )}
             </button>
           );
         })}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 pb-[env(safe-area-inset-bottom)] dark:border-neutral-900">
-        <div className="px-4 pt-3 pb-1 text-sm font-bold text-neutral-900 dark:text-neutral-100">
-          {selDateLabel}
-          {selCount > 0 && (
-            <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
-          )}
+        <div className="flex items-center justify-between px-4 pt-3 pb-1">
+          <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
+            {selDateLabel}
+            {selCount > 0 && (
+              <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
+            )}
+          </span>
+          {selDday === 0 ? (
+            <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-500 dark:bg-red-950/40">
+              {t("calendar.today")}
+            </span>
+          ) : selDday > 0 ? (
+            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-600 dark:bg-blue-950/50 dark:text-blue-300">
+              D-{selDday}
+            </span>
+          ) : null}
         </div>
 
         {selectedAnnivs.map((a) => (
