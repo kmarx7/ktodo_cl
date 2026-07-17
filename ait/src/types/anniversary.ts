@@ -26,6 +26,6 @@ export const ANNIVERSARY_KINDS: AnniversaryKind[] = [
 export const ANNIVERSARY_EMOJI: Record<AnniversaryKind, string> = {
   birthday: "🎂",
   anniversary: "🎉",
-  memorial: "🕯",
+  memorial: "🕊",
   etc: "📌",
 };

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { format } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import { Check, Trash2 } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { useUiStore } from "@/lib/uiStore";
@@ -42,6 +42,10 @@ export function ItemRow({ item }: { item: Item }) {
 
   const due = formatDue(item.dueDate, item.dueTime, locale);
   const overdue = !item.checked && isOverdue(item.dueDate, item.dueTime);
+  const dday =
+    item.dueDate && !item.checked
+      ? differenceInCalendarDays(new Date(`${item.dueDate}T00:00`), new Date())
+      : null;
 
   const restingX = isOpen ? -DELETE_WIDTH : 0;
   const offset = dragX ?? restingX;
@@ -190,6 +194,18 @@ export function ItemRow({ item }: { item: Item }) {
             <p className={`text-xs ${overdue ? "text-red-500" : "text-neutral-400"}`}>{due}</p>
           )}
         </div>
+
+        {dday !== null && dday >= 0 && (
+          <span
+            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+              dday === 0
+                ? "bg-red-50 text-red-500 dark:bg-red-950/40"
+                : "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300"
+            }`}
+          >
+            {dday === 0 ? t("calendar.today") : `D-${dday}`}
+          </span>
+        )}
 
         {item.amount !== null && (
           <span

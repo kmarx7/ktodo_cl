@@ -22,21 +22,26 @@ export function UpcomingAnniversaries() {
           key={`${anniversary.id}-${i}`}
           type="button"
           onClick={() => go("remember")}
-          className="flex w-full touch-manipulation items-center gap-3 px-4 py-3 text-left active:bg-neutral-50 dark:active:bg-neutral-900"
+          className="flex w-full touch-manipulation items-center gap-3 px-4 py-2.5 text-left active:bg-neutral-50 dark:active:bg-neutral-900"
         >
           <span className="text-lg">{ANNIVERSARY_EMOJI[anniversary.kind]}</span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              {anniversary.title}
+            </p>
+            <p className="text-xs text-neutral-400">
+              {anniversaryDateText(anniversary, locale)}
+              {anniversary.recurring ? ` · ${t("anniv.yearly")}` : ""}
+            </p>
+          </div>
           <span
-            className={`w-11 shrink-0 text-xs font-extrabold ${
-              dday === 0 ? "text-red-500" : "text-pink-600 dark:text-pink-400"
+            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${
+              dday === 0
+                ? "bg-red-100 text-red-500 dark:bg-red-950/50"
+                : "bg-pink-100 text-pink-600 dark:bg-pink-900/50 dark:text-pink-300"
             }`}
           >
             {dday === 0 ? t("calendar.today") : `D-${dday}`}
-          </span>
-          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-            {anniversary.title}
-          </span>
-          <span className="shrink-0 text-xs text-neutral-400">
-            {anniversaryDateText(anniversary, locale)}
           </span>
         </button>
       ))}

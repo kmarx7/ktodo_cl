@@ -242,22 +242,11 @@ export function CalendarView() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 pb-[env(safe-area-inset-bottom)] dark:border-neutral-900">
-        <div className="flex items-center justify-between px-4 pt-3 pb-1">
-          <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-            {selDateLabel}
-            {selCount > 0 && (
-              <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
-            )}
-          </span>
-          {selDday === 0 ? (
-            <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-500 dark:bg-red-950/40">
-              {t("calendar.today")}
-            </span>
-          ) : selDday > 0 ? (
-            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-600 dark:bg-blue-950/50 dark:text-blue-300">
-              D-{selDday}
-            </span>
-          ) : null}
+        <div className="px-4 pt-3 pb-1 text-sm font-bold text-neutral-900 dark:text-neutral-100">
+          {selDateLabel}
+          {selCount > 0 && (
+            <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
+          )}
         </div>
 
         {selectedAnnivs.map((a) => (
@@ -265,16 +254,29 @@ export function CalendarView() {
             key={a.id}
             type="button"
             onClick={() => setEditingAnniversaryId(a.id)}
-            className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
+            className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2 text-left dark:bg-pink-950/30"
           >
             <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
-              {a.title}
-            </span>
-            <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
-              {anniversaryDateText(a, locale)}
-              {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
-            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
+                {a.title}
+              </p>
+              <p className="text-xs text-pink-400 dark:text-pink-500/80">
+                {anniversaryDateText(a, locale)}
+                {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
+              </p>
+            </div>
+            {selDday >= 0 && (
+              <span
+                className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                  selDday === 0
+                    ? "bg-red-100 text-red-500 dark:bg-red-950/50"
+                    : "bg-pink-100 text-pink-600 dark:bg-pink-900/50 dark:text-pink-300"
+                }`}
+              >
+                {selDday === 0 ? t("calendar.today") : `D-${selDday}`}
+              </span>
+            )}
           </button>
         ))}
 
