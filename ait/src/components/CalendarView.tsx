@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   addMonths,
-  differenceInCalendarDays,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
@@ -13,14 +12,15 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { useSettingsStore } from "@/lib/settingsStore";
 import { useAnniversaryStore } from "@/lib/anniversaryStore";
 import { useUiStore } from "@/lib/uiStore";
-import { anniversariesByDate, anniversaryDateText, anniversaryOccurrences } from "@/lib/anniversary";
-import { useLocale, useT, type TranslationKey } from "@/lib/i18n";
-import { type Item } from "@/types/item";
+import { useNav } from "@/lib/nav";
+import { anniversariesByDate, anniversaryDateText } from "@/lib/anniversary";
+import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
+import { ITEM_TYPES, type Item } from "@/types/item";
 import { ANNIVERSARY_EMOJI } from "@/types/anniversary";
 import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { lunarCellLabel } from "@/lib/lunar";
@@ -65,6 +65,7 @@ export function CalendarView() {
   const anniversaries = useAnniversaryStore((state) => state.items);
   const calendarCategories = useSettingsStore((state) => state.calendarCategories);
   const setEditingAnniversaryId = useUiStore((state) => state.setEditingAnniversaryId);
+  const go = useNav((state) => state.go);
   const t = useT();
   const locale = useLocale();
   const [month, setMonth] = useState(() => new Date());
@@ -114,35 +115,21 @@ export function CalendarView() {
   };
 
   const selectedDate = new Date(`${selected}T00:00`);
+  const selectedItems = byDate.get(selected) ?? [];
+  const groupedSelected = ITEM_TYPES.map((type) => ({
+    type,
+    items: selectedItems.filter((item) => item.type === type),
+  })).filter((group) => group.items.length > 0);
 
-  // This month's anniversaries (shown above the grid, kept apart from to-dos).
-  const monthAnnivs = useMemo(
-    () =>
-      anniversaryOccurrences(anniversaries, startOfMonth(month), endOfMonth(month)).sort(
-        (a, b) => a.date.getTime() - b.date.getTime()
-      ),
-    [anniversaries, month]
-  );
-
-  // Month agenda (below the grid): every date in the visible month that has
-  // to-do items, sorted, with a D-day badge.
-  const agenda = useMemo(() => {
-    const start = startOfMonth(month);
-    const end = endOfMonth(month);
-    return [...byDate.keys()]
-      .filter((key) => {
-        const d = new Date(`${key}T00:00`);
-        return d >= start && d <= end;
-      })
-      .sort()
-      .map((key) => ({ key, date: new Date(`${key}T00:00`), items: byDate.get(key) ?? [] }));
-  }, [month, byDate]);
-
-  // Tapping a grid day scrolls its agenda section into view.
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  useEffect(() => {
-    sectionRefs.current[selected]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [selected]);
+  const selWeekday = t(WEEKDAY_KEYS[selectedDate.getDay()]);
+  const selDateLabel =
+    locale === "ko"
+      ? `${format(selectedDate, "M월 d일")} (${selWeekday})`
+      : `${selWeekday}, ${format(selectedDate, "MMM d")}`;
+  const selCount = selectedItems.length;
+  const selCountLabel =
+    locale === "ko" ? `${selCount}건` : `${selCount} item${selCount !== 1 ? "s" : ""}`;
+  const selectedAnnivs = annivByDate.get(selected) ?? [];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -177,27 +164,14 @@ export function CalendarView() {
         </button>
       </div>
 
-      {monthAnnivs.length > 0 && (
-        <div className="mb-2 flex shrink-0 flex-col gap-1 px-4">
-          {monthAnnivs.map(({ anniversary: a, date }) => (
-            <button
-              key={`${a.id}-${date.getTime()}`}
-              type="button"
-              onClick={() => setEditingAnniversaryId(a.id)}
-              className="flex touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2 text-left dark:bg-pink-950/30"
-            >
-              <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
-                {a.title}
-              </span>
-              <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
-                {format(date, locale === "ko" ? "M월 d일" : "MMM d")}
-                {a.calendar === "lunar" ? ` · ${anniversaryDateText(a, locale)}` : ""}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+      <button
+        type="button"
+        onClick={() => go("remember")}
+        className="mx-4 mb-2 flex w-fit touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
+      >
+        <Star size={13} className="fill-amber-400 text-amber-400" />
+        {t("remember.entry")}
+      </button>
 
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (
@@ -284,50 +258,46 @@ export function CalendarView() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto border-t border-neutral-100 pb-[env(safe-area-inset-bottom)] dark:border-neutral-900">
-        {agenda.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-neutral-400">
-            {t("calendar.emptyMonth")}
-          </p>
+        <div className="px-4 pt-3 pb-1 text-sm font-bold text-neutral-900 dark:text-neutral-100">
+          {selDateLabel}
+          {selCount > 0 && (
+            <span className="font-medium text-neutral-400"> · {selCountLabel}</span>
+          )}
+        </div>
+
+        {selectedAnnivs.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            onClick={() => setEditingAnniversaryId(a.id)}
+            className="mx-4 mb-1 flex w-[calc(100%-2rem)] touch-manipulation items-center gap-2.5 rounded-xl bg-pink-50 px-3 py-2.5 text-left dark:bg-pink-950/30"
+          >
+            <span className="text-lg">{ANNIVERSARY_EMOJI[a.kind]}</span>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-pink-700 dark:text-pink-300">
+              {a.title}
+            </span>
+            <span className="shrink-0 text-xs text-pink-400 dark:text-pink-500/80">
+              {anniversaryDateText(a, locale)}
+              {a.recurring ? ` · ${t("anniv.yearly")}` : ""}
+            </span>
+          </button>
+        ))}
+
+        {groupedSelected.length === 0 && selectedAnnivs.length === 0 ? (
+          <p className="px-4 py-6 text-center text-sm text-neutral-400">{t("calendar.noItems")}</p>
         ) : (
-          agenda.map(({ key, date, items: dayItems }) => {
-            const dd = differenceInCalendarDays(date, new Date());
-            const wd = t(WEEKDAY_KEYS[date.getDay()]);
-            const dateLabel =
-              locale === "ko"
-                ? `${format(date, "M월 d일")} (${wd})`
-                : `${wd}, ${format(date, "MMM d")}`;
-            return (
-              <div
-                key={key}
-                ref={(el) => {
-                  sectionRefs.current[key] = el;
-                }}
-                className={`scroll-mt-2 ${
-                  selected === key ? "bg-blue-50/50 dark:bg-blue-950/20" : ""
-                }`}
-              >
-                <div className="flex items-center justify-between px-4 pt-3 pb-1">
-                  <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-                    {dateLabel}
-                  </span>
-                  {dd === 0 ? (
-                    <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-500 dark:bg-red-950/40">
-                      {t("calendar.today")}
-                    </span>
-                  ) : dd > 0 ? (
-                    <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-600 dark:bg-blue-950/50 dark:text-blue-300">
-                      D-{dd}
-                    </span>
-                  ) : null}
-                </div>
-                <ul>
-                  {dayItems.map((item) => (
-                    <ItemRow key={item.id} item={item} />
-                  ))}
-                </ul>
-              </div>
-            );
-          })
+          groupedSelected.map(({ type, items: groupItems }) => (
+            <div key={type}>
+              <p className="px-4 pt-3 pb-1 text-xs font-semibold text-neutral-400">
+                {t(ITEM_TYPE_TRANSLATION_KEY[type])}
+              </p>
+              <ul>
+                {groupItems.map((item) => (
+                  <ItemRow key={item.id} item={item} />
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </div>
     </div>
