@@ -1,8 +1,0 @@
-node_modules/
-dist/
-.tmp/
-*.tsbuildinfo
-
-# App-in-Toss build output
-.granite/
-*.ait
