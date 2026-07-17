@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { CalendarPlus, Clock, Plus } from "lucide-react";
 import { useItemStore } from "@/lib/store";

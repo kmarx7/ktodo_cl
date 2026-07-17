@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { Item, ItemType } from "@/types/item";
+import { appStorage } from "@/lib/storage";
 
 interface NewItemInput {
   type: ItemType;
@@ -19,7 +20,6 @@ interface ItemStore {
   restoreLastDeleted: () => void;
   clearLastDeleted: () => void;
   updateItem: (id: string, patch: Partial<Item>) => void;
-  markNotified: (id: string) => void;
 }
 
 export const useItemStore = create<ItemStore>()(
@@ -38,7 +38,6 @@ export const useItemStore = create<ItemStore>()(
               dueDate: input.dueDate,
               dueTime: input.dueTime,
               checked: false,
-              notified: false,
               createdAt: Date.now(),
             },
             ...state.items,
@@ -68,15 +67,10 @@ export const useItemStore = create<ItemStore>()(
             item.id === id ? { ...item, ...patch } : item
           ),
         })),
-      markNotified: (id) =>
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, notified: true } : item
-          ),
-        })),
     }),
     {
       name: "todo-cl-items",
+      storage: createJSONStorage(() => appStorage),
       partialize: (state) => ({ items: state.items }),
     }
   )

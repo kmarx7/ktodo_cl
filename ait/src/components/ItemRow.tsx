@@ -1,7 +1,5 @@
-"use client";
-
 import { useRef, useState } from "react";
-import { format } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import { Check, Trash2 } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { useUiStore } from "@/lib/uiStore";
@@ -32,6 +30,7 @@ export function ItemRow({ item }: { item: Item }) {
   const deleteItem = useItemStore((state) => state.deleteItem);
   const openRowId = useUiStore((state) => state.openRowId);
   const setOpenRow = useUiStore((state) => state.setOpenRow);
+  const setEditingId = useUiStore((state) => state.setEditingId);
   const t = useT();
   const locale = useLocale();
 
@@ -43,6 +42,10 @@ export function ItemRow({ item }: { item: Item }) {
 
   const due = formatDue(item.dueDate, item.dueTime, locale);
   const overdue = !item.checked && isOverdue(item.dueDate, item.dueTime);
+  const dday =
+    item.dueDate && !item.checked
+      ? differenceInCalendarDays(new Date(`${item.dueDate}T00:00`), new Date())
+      : null;
 
   const restingX = isOpen ? -DELETE_WIDTH : 0;
   const offset = dragX ?? restingX;
@@ -142,7 +145,12 @@ export function ItemRow({ item }: { item: Item }) {
             dragged.current = false;
             return;
           }
-          if (isOpen) setOpenRow(null);
+          // A tap while the swipe drawer is open just closes it; otherwise edit.
+          if (isOpen) {
+            setOpenRow(null);
+          } else {
+            setEditingId(item.id);
+          }
         }}
         style={{
           transform: `translateX(${offset}px)`,
@@ -186,6 +194,16 @@ export function ItemRow({ item }: { item: Item }) {
             <p className={`text-xs ${overdue ? "text-red-500" : "text-neutral-400"}`}>{due}</p>
           )}
         </div>
+
+        {dday !== null && dday >= 0 && (
+          <span
+            className={`shrink-0 pr-0.5 text-[11px] font-bold ${
+              dday === 0 ? "text-red-500" : "text-blue-600 dark:text-blue-300"
+            }`}
+          >
+            {dday === 0 ? t("calendar.today") : `D-${dday}`}
+          </span>
+        )}
 
         {item.amount !== null && (
           <span
