@@ -35,10 +35,8 @@ export function UpcomingAnniversaries() {
             </p>
           </div>
           <span
-            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${
-              dday === 0
-                ? "bg-red-100 text-red-500 dark:bg-red-950/50"
-                : "bg-pink-100 text-pink-600 dark:bg-pink-900/50 dark:text-pink-300"
+            className={`shrink-0 text-xs font-extrabold ${
+              dday === 0 ? "text-red-500" : "text-pink-600 dark:text-pink-400"
             }`}
           >
             {dday === 0 ? t("calendar.today") : `D-${dday}`}

@@ -70,9 +70,9 @@ function App() {
           <button
             type="button"
             onClick={() => go("remember")}
-            className="-mr-1 flex touch-manipulation items-center gap-1.5 rounded-full px-2 py-2 text-xs font-semibold text-neutral-500 active:text-neutral-800 dark:text-neutral-400 dark:active:text-neutral-200"
+            className="flex touch-manipulation items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-800 active:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:active:bg-neutral-700"
           >
-            <Star size={15} className="fill-amber-400 text-amber-400" />
+            <Star size={13} className="fill-amber-400 text-amber-400" />
             {t("remember.entry")}
           </button>
         </header>

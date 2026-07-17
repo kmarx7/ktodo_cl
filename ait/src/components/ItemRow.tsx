@@ -197,10 +197,8 @@ export function ItemRow({ item }: { item: Item }) {
 
         {dday !== null && dday >= 0 && (
           <span
-            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-              dday === 0
-                ? "bg-red-50 text-red-500 dark:bg-red-950/40"
-                : "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300"
+            className={`shrink-0 pr-0.5 text-[11px] font-bold ${
+              dday === 0 ? "text-red-500" : "text-blue-600 dark:text-blue-300"
             }`}
           >
             {dday === 0 ? t("calendar.today") : `D-${dday}`}
