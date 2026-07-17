@@ -1,5 +1,7 @@
+import { Star } from "lucide-react";
+import { format } from "date-fns";
 import { useNav, type Screen } from "@/lib/nav";
-import { useT } from "@/lib/i18n";
+import { useLocale, useT, type TranslationKey } from "@/lib/i18n";
 import { ITEM_TYPE_HAS_AMOUNT } from "@/types/item";
 import { HeaderBar } from "@/components/HeaderBar";
 import { TabBar } from "@/components/TabBar";
@@ -42,6 +44,13 @@ function App() {
   const screen = useNav((state) => state.screen);
   const go = useNav((state) => state.go);
   const t = useT();
+  const locale = useLocale();
+  const today = new Date();
+  const todayWeekday = t(`calendar.weekday.${today.getDay()}` as TranslationKey);
+  const todayLabel =
+    locale === "ko"
+      ? `${format(today, "yyyy년 M월 d일")} (${todayWeekday})`
+      : `${todayWeekday}, ${format(today, "MMM d, yyyy")}`;
 
   // The in-app-purchase flow is a standalone screen with its own TDS header.
   if (screen === "iap") {
@@ -51,10 +60,21 @@ function App() {
   return (
     <>
       {screen === "home" ? (
-        <header className="flex shrink-0 items-center px-4 py-3 pt-[max(env(safe-area-inset-top),0.75rem)]">
-          <h1 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-100">
-            {t("app.name")}
-          </h1>
+        <header className="flex shrink-0 items-center justify-between px-4 py-3 pt-[max(env(safe-area-inset-top),0.75rem)]">
+          <div>
+            <h1 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-100">
+              {t("app.name")}
+            </h1>
+            <p className="mt-0.5 text-xs text-neutral-400">{todayLabel}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => go("remember")}
+            className="flex touch-manipulation items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-900 active:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100"
+          >
+            <Star size={13} className="fill-amber-400 text-amber-400" />
+            {t("remember.entry")}
+          </button>
         </header>
       ) : (
         <HeaderBar screen={screen} />

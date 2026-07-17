@@ -12,17 +12,15 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { CheckSquare, ChevronLeft, ChevronRight, Lightbulb, ShoppingCart, Wallet } from "lucide-react";
 import { useItemStore } from "@/lib/store";
 import { useSettingsStore } from "@/lib/settingsStore";
 import { useAnniversaryStore } from "@/lib/anniversaryStore";
 import { useUiStore } from "@/lib/uiStore";
-import { useNav } from "@/lib/nav";
 import { anniversariesByDate, anniversaryDateText } from "@/lib/anniversary";
 import { ITEM_TYPE_TRANSLATION_KEY, useLocale, useT, type TranslationKey } from "@/lib/i18n";
-import { ITEM_TYPES, type Item } from "@/types/item";
+import { ITEM_TYPES, type Item, type ItemType } from "@/types/item";
 import { ANNIVERSARY_EMOJI } from "@/types/anniversary";
-import { ITEM_TYPE_THEME } from "@/lib/theme";
 import { lunarCellLabel } from "@/lib/lunar";
 import { ItemRow } from "./ItemRow";
 
@@ -35,6 +33,20 @@ const WEEKDAY_KEYS: TranslationKey[] = [
   "calendar.weekday.5",
   "calendar.weekday.6",
 ];
+
+// Small category markers shown on each calendar day (instead of colored dots).
+const ITEM_ICON: Record<ItemType, typeof CheckSquare> = {
+  todo: CheckSquare,
+  topay: Wallet,
+  tobuy: ShoppingCart,
+  tothink: Lightbulb,
+};
+const ITEM_ICON_COLOR: Record<ItemType, string> = {
+  todo: "text-blue-500",
+  topay: "text-orange-500",
+  tobuy: "text-emerald-500",
+  tothink: "text-violet-500",
+};
 
 function groupByDate(items: Item[]): Map<string, Item[]> {
   const map = new Map<string, Item[]>();
@@ -65,7 +77,6 @@ export function CalendarView() {
   const anniversaries = useAnniversaryStore((state) => state.items);
   const calendarCategories = useSettingsStore((state) => state.calendarCategories);
   const setEditingAnniversaryId = useUiStore((state) => state.setEditingAnniversaryId);
-  const go = useNav((state) => state.go);
   const t = useT();
   const locale = useLocale();
   const [month, setMonth] = useState(() => new Date());
@@ -164,15 +175,6 @@ export function CalendarView() {
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => go("remember")}
-        className="mx-4 mb-2 flex w-fit touch-manipulation items-center gap-1 rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600 active:bg-pink-100 dark:bg-pink-950/40 dark:text-pink-300"
-      >
-        <Star size={13} className="fill-amber-400 text-amber-400" />
-        {t("remember.entry")}
-      </button>
-
       <div className="grid shrink-0 grid-cols-7 px-2 text-center text-[11px] text-neutral-400">
         {WEEKDAY_KEYS.map((key, i) => (
           <div
@@ -242,10 +244,11 @@ export function CalendarView() {
               <span className="text-[8px] leading-tight text-neutral-400 dark:text-neutral-500">
                 {lunarCellLabel(day)}
               </span>
-              <span className={`mt-0.5 flex h-1.5 gap-0.5 ${allDone ? "opacity-40" : ""}`}>
-                {types.map((type) => (
-                  <span key={type} className={`h-1.5 w-1.5 rounded-full ${ITEM_TYPE_THEME[type].dot}`} />
-                ))}
+              <span className={`mt-0.5 flex h-3 items-center gap-0.5 ${allDone ? "opacity-40" : ""}`}>
+                {types.map((type) => {
+                  const Icon = ITEM_ICON[type];
+                  return <Icon key={type} size={11} strokeWidth={2.5} className={ITEM_ICON_COLOR[type]} />;
+                })}
               </span>
               {payTotal > 0 && (
                 <span className="text-[9px] font-bold leading-none text-orange-500">
