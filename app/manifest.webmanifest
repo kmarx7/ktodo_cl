@@ -1,0 +1,16 @@
+{
+  "name": "미리꼭",
+  "short_name": "미리꼭",
+  "description": "할일부터 결제까지 — 로컬 체크리스트 · 캘린더 · 기억할 것",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#3182F6",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
